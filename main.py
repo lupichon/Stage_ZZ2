@@ -1,4 +1,4 @@
-import my_wiiboard
+import modules
 import pygame
 import time
 import matplotlib
@@ -6,7 +6,7 @@ import matplotlib
 FACTOR = 20
 
 def main():
-	board = my_wiiboard.Wiiboard()
+	board = modules.Wiiboard()
 	pygame.init()
 	
 	address = board.discover()
@@ -22,8 +22,8 @@ def main():
 	GREEN = (0,255,0)
 	BLUE = (0,0,255)
 
-	rect_width = FACTOR * my_wiiboard.L 
-	rect_height = FACTOR * my_wiiboard.W
+	rect_width = FACTOR * modules.L 
+	rect_height = FACTOR * modules.W
 
 	center_x = window_size[0] // 2
 	center_y = window_size[1] // 2
@@ -35,7 +35,7 @@ def main():
 
 	while(running and board.status == "Connected"):
 		for event in pygame.event.get():
-			if event.type == my_wiiboard.WIIBOARD_MASS:
+			if event.type == modules.WIIBOARD_MASS:
 				#print ("Total weight: " + str(event.mass.totalWeight) + ". Top left: " + str(event.mass.topLeft) + ". Bottom left: " + str(event.mass.bottomLeft) + ". Top right: " + str(event.mass.topRight) + ". Bottom right: " + str(event.mass.bottomRight))
 				#print("x : " + str(event.mass.CoMx) + " y : " + str(event.mass.CoMy))
 				screen.fill((255, 255, 255))
@@ -49,10 +49,10 @@ def main():
 				pygame.display.flip()
 					
 
-			elif event.type == my_wiiboard.WIIBOARD_BUTTON_PRESS:
+			elif event.type == modules.WIIBOARD_BUTTON_PRESS:
 				print("Button pressed!")
 
-			elif event.type == my_wiiboard.WIIBOARD_BUTTON_RELEASE:
+			elif event.type == modules.WIIBOARD_BUTTON_RELEASE:
 				print("Button released")
 			
 			elif event.type == pygame.QUIT:

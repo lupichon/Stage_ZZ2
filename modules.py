@@ -8,7 +8,7 @@ import socket
 base = pygame.USEREVENT
 WIIBOARD_BUTTON_PRESS = base + 1
 WIIBOARD_BUTTON_RELEASE = base + 2
-WIIBOARD_MASS = base + 3
+WIIBOARD_MASS = base + 3				
 WIIBOARD_CONNECTED = base + 4
 WIIBOARD_DISCONNECTED = base + 5
 
