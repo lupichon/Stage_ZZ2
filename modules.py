@@ -75,7 +75,6 @@ class Wiiboard:
 		self.receivesocket.connect((address, 0x13))
 		self.receivesocket.settimeout(120)
 		self.controlsocket.connect((address, 0x11))
-		#self.controlsocket.settimeout(2)
 		if self.receivesocket and self.controlsocket:
 			print("Connected to Wiiboard at address " + address)
 			self.status = "Connected"
@@ -161,7 +160,7 @@ class Wiiboard:
 			try : 
 				message = ["00", COMMAND_READ_REGISTER, "04", "A4", "00", "00", "00", "08"]
 				self.send(message)
-				time.sleep(0.05)
+				time.sleep(0.01)
 				data = self.receivesocket.recv(25)
 				if(data[1]==33):
 					self.lastEvent = self.createBoardEvent(data[2:15])
@@ -213,6 +212,43 @@ class Wiiboard:
 
 		return val
 
+class graph:
+	
+	RED = (255, 0, 0)
+	GREEN = (0,255,0)
+	BLUE = (0,0,255)
+	FACTOR = 20
+	screen = None
+	center_x = 0
+	center_y = 0
+	rect_x = 0
+	rect_y = 0
+	rect_height = 0
+	rect_width = 0
+
+
+	def __init__(self,w,h,title):
+		window_size = (w,h)
+		self.screen = pygame.display.set_mode(window_size)
+		pygame.display.set_caption(title)
+
+		self.rect_width = self.FACTOR * L 
+		self.rect_height = self.FACTOR * W
+
+		self.center_x = window_size[0] // 2
+		self.center_y = window_size[1] // 2
+		self.rect_x = self.center_x - self.rect_width // 2
+		self.rect_y = self.center_y - self.rect_height // 2
+
+	def display(self,event):
+		self.screen.fill((255, 255, 255))
+		pygame.draw.rect(self.screen, self.BLUE, (self.rect_x, self.rect_y, self.rect_width, self.rect_height),1)
+		pygame.draw.circle(self.screen,self.GREEN, (self.center_x - self.rect_width // 4,self.center_y),8)
+		if(event.mass.totalWeight > 5):
+			pygame.draw.circle(self.screen, self.RED, (self.center_x + self.FACTOR * event.mass.CoMx,self.center_y - self.FACTOR * event.mass.CoMy),8)
+		else:
+			pygame.draw.circle(self.screen, self.RED, (self.center_x,self.center_y),8)
+		pygame.display.flip()
 
 				
 		
