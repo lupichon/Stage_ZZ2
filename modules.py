@@ -244,6 +244,10 @@ class graph:
 		self.screen.fill((255, 255, 255))
 		pygame.draw.rect(self.screen, self.BLUE, (self.rect_x, self.rect_y, self.rect_width, self.rect_height),1)
 		pygame.draw.circle(self.screen,self.GREEN, (self.center_x - self.rect_width // 4,self.center_y),8)
+		font = pygame.font.Font(None, 36)  # Utilise la police par défaut avec une taille de 36
+
+		text_surface = font.render("weight = " + str(event.mass.totalWeight), True, (0,0,0))
+		self.screen.blit(text_surface, (100,100))
 		if(event.mass.totalWeight > 5):
 			pygame.draw.circle(self.screen, self.RED, (self.center_x + self.FACTOR * event.mass.CoMx,self.center_y - self.FACTOR * event.mass.CoMy),8)
 		else:
