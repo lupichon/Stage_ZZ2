@@ -67,14 +67,19 @@ class Wiiboard:
 
 	# Connect to the Wiiboard at bluetooth address <address>
 	def connect(self, address):
+		window.add_text.pop()
 		if address is None:
-			print("Non existant address")
+			txt = "No Wiiboards discovered"
+			window.add_text.append((txt,(window.graph.window_size[0]-window.font.size(txt)[0])//2,50))
 			return
+		txt = "Wiiboard Found"
+		window.add_text.append((txt,(window.graph.window_size[0]-window.font.size(txt)[0])//2,50))
 		self.receivesocket.connect((address, 0x13))
 		self.receivesocket.settimeout(120)
 		self.controlsocket.connect((address, 0x11))
 		if self.receivesocket and self.controlsocket:
-			print("Connected to Wiiboard at address " + address)
+			txt = "Connected to Wiiboard"
+			window.add_text.append((txt,(window.graph.window_size[0]-window.font.size(txt)[0])//2,150))
 			self.status = "Connected"
 			self.address = address
 			thread = threading.Thread(target=self.receivethread, args=())
@@ -84,7 +89,8 @@ class Wiiboard:
 			
 			pygame.event.post(pygame.event.Event(WIIBOARD_CONNECTED))
 		else:
-			print("Could not connect to Wiiboard at address " + address)
+			txt = "Unable to connect to Wiiboard"
+			window.add_text.append((txt,(window.graph.window_size[0]-window.font.size(txt)[0])//2,150))
 
 
 	# Disconnect from the Wiiboard
@@ -100,15 +106,19 @@ class Wiiboard:
 
 	# Try to discover a Wiiboard
 	def discover(self):
-		print ("Press the red sync button on the board now")
+		try : 
+			window.add_text.pop()
+		except : 
+			pass
+		txt = "Please press the red sync button on the board now"
+		window.add_text.append((txt,(window.graph.window_size[0]-window.font.size(txt)[0])//2,50))
+		window.graph.display_menu_screen()
 		address = None
 		bluetoothdevices = bluetooth.discover_devices(duration = 3, lookup_names = True)
 		for bluetoothdevice in bluetoothdevices:
 			if bluetoothdevice[1] == BLUETOOTH_NAME:
 				address = bluetoothdevice[0]
 				print ("Found Wiiboard at address " + address)
-		if address == None:
-			print ("No Wiiboards discovered.")
 		return address
 	
 	
@@ -209,7 +219,7 @@ class Wiiboard:
 
 		return val
 
-
+board = Wiiboard()
 		
 
 

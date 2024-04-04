@@ -3,13 +3,27 @@ import window
 import pygame
 import time
 
+resume_img = pygame.image.load("images/button_resume.png").convert_alpha()
+options_img = pygame.image.load("images/button_options.png").convert_alpha()
+quit_img = pygame.image.load("images/button_quit.png").convert_alpha()
+video_img = pygame.image.load('images/button_video.png').convert_alpha()
+audio_img = pygame.image.load('images/button_audio.png').convert_alpha()
+keys_img = pygame.image.load('images/button_keys.png').convert_alpha()
+back_img = pygame.image.load('images/button_back.png').convert_alpha()
+
+#create button instances
+resume_button = window.Button(304, 125, resume_img, 1)
+options_button = window.Button(297, 250, options_img, 1)
+quit_button = window.Button(336, 375, quit_img, 1)
+video_button = window.Button(226, 75, video_img, 1)
+audio_button = window.Button(225, 200, audio_img, 1)
+keys_button = window.Button(246, 325, keys_img, 1)
+back_button = window.Button(332, 450, back_img, 1)
+
 def main():
-	board = wiiboard.Wiiboard()
-	pygame.init()
-	window.font = pygame.font.Font(None, 36)
 	
-	address = board.discover()
-	board.connect(address) 
+	pygame.init()
+	window.font = pygame.font.SysFont("arialblack", 36)
 
 	running = True
 	menu = True
@@ -18,13 +32,16 @@ def main():
 		window.graph.display_menu_screen()
 		for event in pygame.event.get() : 
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				if window.graph.button_rect.collidepoint(pygame.mouse.get_pos()):
+				if window.graph.button1.collidepoint(pygame.mouse.get_pos()):
+					address = wiiboard.board.discover()
+					wiiboard.board.connect(address) 
+				elif window.graph.button2.collidepoint(pygame.mouse.get_pos()):
 					menu = False
 				elif window.graph.input_rect1.collidepoint(pygame.mouse.get_pos()):
 					select = 1
 				elif window.graph.input_rect2.collidepoint(pygame.mouse.get_pos()):
 					select = 2
-
+				
 			elif event.type == pygame.QUIT:
 				running = False
  
@@ -41,15 +58,16 @@ def main():
 						window.graph.input_text2 += event.unicode
 
 			elif event.type == wiiboard.WIIBOARD_CONNECTED:
-				board.setLight(True)
+				wiiboard.board.setLight(True)
 
 			elif event.type == wiiboard.WIIBOARD_DISCONNECTED:
-				board.setLight(False)
+				wiiboard.board.setLight(False)
 		# Rafraîchir l'affichage
 		pygame.display.flip()
-
-	window.graph.getDimensions()
-	while(running and board.status == "Connected"):
+		
+	if(running):
+		window.graph.getDimensions()
+	while(running and wiiboard.board.status == "Connected"):
 		for event in pygame.event.get():
 			if event.type == wiiboard.WIIBOARD_MASS:
 				window.graph.display_main_screen(event.mass)
@@ -64,14 +82,14 @@ def main():
 				running = False
 
 			elif event.type == wiiboard.WIIBOARD_CONNECTED:
-				board.setLight(True)
+				wiiboard.board.setLight(True)
 
 			elif event.type == wiiboard.WIIBOARD_DISCONNECTED:
-				board.setLight(False)
+				wiiboard.board.setLight(False)
 			
 		pygame.display.flip()
 
-	board.disconnect()
+	wiiboard.board.disconnect()
 	pygame.quit()
 	print("end")
 

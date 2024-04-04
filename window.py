@@ -1,4 +1,5 @@
 import pygame
+import wiiboard
 
 #L=43
 #W=24.5
@@ -8,7 +9,41 @@ GREEN = (0,255,0)
 BLUE = (0,0,255)
 BLACK = (0,0,0)
 FACTOR = 20
+
 font = None
+
+size_buttonW = 100
+size_buttonL = 50
+
+add_text = []
+
+class Button():
+	def __init__(self, x, y, image, scale):
+		width = image.get_width()
+		height = image.get_height()
+		self.image = pygame.transform.scale(image, (int(width * scale), int(height * scale)))
+		self.rect = self.image.get_rect()
+		self.rect.topleft = (x, y)
+		self.clicked = False
+
+	def draw(self, surface):
+		action = False
+		#get mouse position
+		pos = pygame.mouse.get_pos()
+
+		#check mouseover and clicked conditions
+		if self.rect.collidepoint(pos):
+			if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+				self.clicked = True
+				action = True
+
+		if pygame.mouse.get_pressed()[0] == 0:
+			self.clicked = False
+
+		#draw button on screen
+		surface.blit(self.image, (self.rect.x, self.rect.y))
+
+		return action
 
 class graph:
 	
@@ -19,7 +54,9 @@ class graph:
 	rect_y = 0
 	rect_height = 0
 	rect_width = 0
-	button_rect = None
+
+	button1 = None
+	button2 = None
 
 	window_size = None
 
@@ -35,7 +72,6 @@ class graph:
 
 
 	def getDimensions(self):
-		print(self.input_text1)
 		self.rect_width = FACTOR * float(self.input_text1) #L
 		self.rect_height = FACTOR * float(self.input_text2)#W
 
@@ -46,44 +82,44 @@ class graph:
 		
 
 	def texteField(self,x,y,screen,input_text):
-		input_rect = pygame.Rect(x,y , 100, 50)
+		input_rect = pygame.Rect(x,y ,size_buttonW, size_buttonL)
 		input_color = (155,155,155)
-		text_color = (0,0,0)
 		pygame.draw.rect(screen, input_color, input_rect)
-		text_surface = font.render(input_text, True, text_color)
+		text_surface = font.render(input_text, True, BLACK)
 		self.screen.blit(text_surface, (input_rect.x + 5, input_rect.y + 5))
 		return input_rect
-
-	def button(self):
-		self.button_rect = pygame.Rect(150, 100, 100, 50)
-		button_color = (150,150,150)
-		hover_color = (255,255,255)
-		text_color = (0,0,0)
-		text = font.render("Validate", True, text_color)
-
-		if self.button_rect.collidepoint(pygame.mouse.get_pos()):
+#(255, 127, 80)
+	def button(self,x,y,txt):
+		button = pygame.Rect(x, y, size_buttonW, size_buttonL)
+		button_color =  RED
+		hover_color = BLUE
+		text = font.render(txt, True, BLACK)
+		
+		if button.collidepoint(pygame.mouse.get_pos()) and wiiboard.board.status == "Disconnected":
 			button_color = hover_color
-		else:
-			button_color = (155,155,155)
-		pygame.draw.rect(self.screen, button_color, self.button_rect)
-		self.screen.blit(text, (self.button_rect.centerx - text.get_width() // 2, self.button_rect.centery - text.get_height() // 2))
+		
+		pygame.draw.rect(self.screen, button_color,button)
+		self.screen.blit(text, (button.centerx - text.get_width() // 2, button.centery - text.get_height() // 2))
+		return button
 	
-	def getLength():
-		a=1
-	
-	def getWidth():
-		a=1
-
 	def display_menu_screen(self):
-		self.screen.fill((255, 255, 255))
-		self.button()
+		self.screen.fill((52, 78, 91))
+
+		self.button1 = self.button((self.window_size[0]-size_buttonW)//2,100,"Start")
+		self.button2 = self.button(800,800,"Validate")
+
+		for t in add_text : 
+			self.displayText(t[0],BLACK,t[1],t[2])
+
 		self.input_rect1 = self.texteField(200,200,self.screen,self.input_text1)
 		self.input_rect2 = self.texteField(200,400,self.screen,self.input_text2)
+
+		pygame.display.flip()
+
 
 	def display_main_screen(self,mass):
 		self.screen.fill((255, 255, 255))
 		pygame.draw.rect(self.screen, BLUE, (self.rect_x, self.rect_y, self.rect_width, self.rect_height),1)
-		pygame.draw.circle(self.screen,GREEN, (self.center_x - self.rect_width // 4,self.center_y),8)
 
 		text_surface = font.render("weight = " + str(round(mass.totalWeight,2)), True, BLACK)
 		self.screen.blit(text_surface, (100,100))
@@ -98,6 +134,8 @@ class graph:
 		except:
 			pygame.draw.circle(self.screen, RED, (self.center_x,self.center_y),8)
 			
-    
+	def displayText(self,txt,Color,x,y):
+		text_surface = font.render(txt, True,Color)
+		self.screen.blit(text_surface,(x,y))
 
 graph = graph(1000,1000,"Center of Gravity")
