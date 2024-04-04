@@ -5,6 +5,7 @@ import time
 import pygame
 import socket 
 import math 
+import window
 
 base = pygame.USEREVENT
 WIIBOARD_BUTTON_PRESS = base + 1
@@ -23,10 +24,6 @@ BUTTON_DOWN_MASK = 8
 
 BLUETOOTH_NAME = "Nintendo RVL-WBC-01"
 
-#dimensions of the WBB
-L = 43			
-W = 24.5
-
 class BoardEvent:
 	
 	def __init__(self, topLeft,topRight,bottomLeft,bottomRight, buttonPressed, buttonReleased):
@@ -38,8 +35,8 @@ class BoardEvent:
 		self.buttonReleased = buttonReleased
 		self.totalWeight = topLeft + topRight + bottomLeft + bottomRight
 		try : 
-			self.CoMx = (L/2) * ((topRight + bottomRight) - (topLeft + bottomLeft))/(topRight + bottomRight + topLeft + bottomLeft)
-			self.CoMy = (W/2) * ((topRight + topLeft) - (bottomRight + bottomLeft))/(topRight + bottomRight + topLeft + bottomLeft)
+			self.CoMx = (float(window.graph.input_text1)/2) * ((topRight + bottomRight) - (topLeft + bottomLeft))/(topRight + bottomRight + topLeft + bottomLeft)
+			self.CoMy = (float(window.graph.input_text2)/2) * ((topRight + topLeft) - (bottomRight + bottomLeft))/(topRight + bottomRight + topLeft + bottomLeft)
 		except : 
 			pass
 
