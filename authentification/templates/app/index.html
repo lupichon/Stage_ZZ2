@@ -7,10 +7,10 @@
 {% endfor %}
 
 {% if user.is_authenticated %}
-<h3> Bonjour {{firstname}} bienvenu </h3>
-<button type=submit><a href="/logout">Se déconnecter</a></button>
+<h3> Hello {{firstname}} welcome! </h3>
+<button type=submit><a href="/logout">Log out</a></button>
 {% else %}
-<button type=submit><a href="/register">S'enregistrer</a></button>
-<button type=submit><a href="/login">Se connecter</a></button>
+<button type=submit><a href="/register">Register</a></button>
+<button type=submit><a href="/login">Log in</a></button>
 {% endif %}
 {% endblock %}
