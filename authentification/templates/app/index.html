@@ -9,6 +9,7 @@
 {% if user.is_authenticated %}
 <h3> Hello {{firstname}} welcome! </h3>
 <button type=submit><a href="/logout">Log out</a></button>
+<button type=submit><a href="/wbb">Start</a></button>
 {% else %}
 <button type=submit><a href="/register">Register</a></button>
 <button type=submit><a href="/login">Log in</a></button>
