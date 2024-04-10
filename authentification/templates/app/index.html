@@ -9,7 +9,20 @@
 {% if user.is_authenticated %}
 <h3> Hello {{firstname}} welcome! </h3>
 <button type=submit><a href="/logout">Log out</a></button>
-<button type=submit><a href="/wbb">Start</a></button>
+<br><br>
+
+<form method="post" action="wbb">
+    {% csrf_token %}
+    <label for ="height">height</label>
+    <input type="text" name="height" id="height" placeholder="Enter the height" required>
+    <br><br>
+
+    <label for ="width">width</label>
+    <input type="text" name="width" id="width" placeholder="Enter the width" required>
+    <br><br>
+
+    <button type="submit">Start</button>
+</form>
 {% else %}
 <button type=submit><a href="/register">Register</a></button>
 <button type=submit><a href="/login">Log in</a></button>

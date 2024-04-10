@@ -9,15 +9,14 @@
 
 <form method="post" action="/login">
     {% csrf_token %}
-<label for ="username">Username</label>
-<input type="text" name="username" id="username" placeholder="Enter your username" required>
-<br><br>
+    <label for ="username">Username</label>
+    <input type="text" name="username" id="username" placeholder="Enter your username" required>
+    <br><br>
 
-<label for ="password">password</label>
-<input type="password" name="password" id="password" placeholder="Enter your password" required>
-<br><br>
+    <label for ="password">password</label>
+    <input type="password" name="password" id="password" placeholder="Enter your password" required>
+    <br><br>
 
-<button type="submit">Sign in</button>
-
+    <button type="submit">Sign in</button>
 </form>
 {% endblock %}
