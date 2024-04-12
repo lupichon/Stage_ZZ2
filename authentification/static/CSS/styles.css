@@ -1,0 +1,21 @@
+.rectangle {
+    width: 0%;
+    height: 0%;
+    border: 2px solid blue;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.point {
+    width: 10px; /* Largeur du point */
+    height: 10px; /* Hauteur du point */
+    border-radius: 50%; /* Forme du point (cercle) */
+    background-color: red; /* Couleur du point */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+

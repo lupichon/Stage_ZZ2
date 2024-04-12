@@ -1,0 +1,31 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<!-- titre de la fenêtre -->
+		<title>main page</title>
+
+		<!-- précise l'encodage au navigateur (gestion des accents, ...) -->
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+		<!-- Feuilles de style -->
+		<link rel="stylesheet" type="text/css" href="{% static 'CSS/styles.css' %}">
+
+		<!-- Inhibe la grande largeur sur mobile : évite que le mobile présente un écran large et qu'il faille zoomer -->
+		<meta name="viewport" content="initial-scale=1.0, maximum-scale=2.0" />
+
+		<!-- icône de la page -->
+	</head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'JS/updatePoint.js' %}"></script>
+    <body>	
+        <h3> You are on the main page</h3>
+		<div id="dim" data-height="{{ height }}" data-width="{{ width }}"></div>
+        <div  class="rectangle"></div>
+        <div class="point"></div>
+		<div id="x"></div>
+		<div id="y"></div>
+	</body>
+</html>
