@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 var height = document.getElementById('dim').getAttribute('data-height');
                 var width = document.getElementById('dim').getAttribute('data-width');
-
                
                 var x = Math.round(Factor*(width/2)*data.x);
                 var y = Math.round(Factor*(height/2)*data.y);
@@ -37,9 +36,10 @@ document.addEventListener("DOMContentLoaded", function() {
             },
             error: function(xhr, status, error) {
                 console.error("Erreur AJAX :", error);
+                
             }
         });
     }
-    setInterval(updatePointPosition,1); 
+    setInterval(updatePointPosition,100); 
 });
 

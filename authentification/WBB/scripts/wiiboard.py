@@ -22,10 +22,6 @@ BUTTON_DOWN_MASK = 8
 
 BLUETOOTH_NAME = "Nintendo RVL-WBC-01"
 
-#dimensions of the WBB
-L = 43			
-W = 24.5
-
 class BoardEvent:
 	
 	def __init__(self, topLeft,topRight,bottomLeft,bottomRight, buttonPressed, buttonReleased):
@@ -56,12 +52,6 @@ class Wiiboard:
 		self.status = "Disconnected"
 		self.lastEvent = BoardEvent(0,0,0,0,False,False)
 
-		try:
-			self.receivesocket = bluetooth.BluetoothSocket(bluetooth.L2CAP)
-			self.controlsocket = bluetooth.BluetoothSocket(bluetooth.L2CAP)
-		except ValueError:
-			raise Exception("Error: Bluetooth not found")
-
 	def isConnected(self):
 		if self.status == "Connected":
 			return True
@@ -70,13 +60,19 @@ class Wiiboard:
 
 	# Connect to the Wiiboard at bluetooth address <address>
 	def connect(self, address):
+		global find
 		if address is None:
 			print("Non existant address")
 			return
+		try:
+			self.receivesocket = bluetooth.BluetoothSocket(bluetooth.L2CAP)
+			self.controlsocket = bluetooth.BluetoothSocket(bluetooth.L2CAP)
+		except ValueError:
+			raise Exception("Error: Bluetooth not found")
+		
 		self.receivesocket.connect((address, 0x13))
 		self.receivesocket.settimeout(120)
 		self.controlsocket.connect((address, 0x11))
-		#self.controlsocket.settimeout(2)
 		if self.receivesocket and self.controlsocket:
 			print("Connected to Wiiboard at address " + address)
 			self.status = "Connected"
@@ -96,7 +92,8 @@ class Wiiboard:
 		try:
 			self.receivesocket.close()
 			self.controlsocket.close()
-			pygame.event.post(pygame.event.Event(WIIBOARD_DISCONNECTED))
+			self.receivesocket = None
+			self.controlsocket = None
 			self.status = "Disconnected"
 		except:
 			pass
@@ -168,7 +165,7 @@ class Wiiboard:
 					self.lastEvent = self.createBoardEvent(data[2:15])
 					pygame.event.post(pygame.event.Event(WIIBOARD_MASS, mass=self.lastEvent))
 			except : 
-				pass
+				pygame.event.post(pygame.event.Event(WIIBOARD_DISCONNECTED))
 		
 	def createBoardEvent(self, bytes):
 		buttonBytes = bytes[0:2]

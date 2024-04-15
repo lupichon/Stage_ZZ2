@@ -74,21 +74,23 @@ def register(request):
     return render(request, "app/register.html")
 
 def lOgin(request):
-    if request.method == "POST" : 
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username = username, password = password)
-        my_user = User.objects.get(username=username)
-        if user is not None : 
-            login(request, user)
-            firstname = user.first_name
-            return render(request, "app/index.html", {'firstname':firstname})
-        elif my_user.is_active == False:
-            messages.error(request,"The account is not yet activated")
-            return redirect('login')
-        else : 
-            messages.error(request,'Invalid authentification, please try again later')
-            return redirect('login')
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        if User.objects.filter(username=username).exists():
+            user = authenticate(username=username, password=password)
+            
+            if user is not None:
+                login(request, user)
+                firstname = user.first_name
+                return render(request, "app/index.html", {'firstname': firstname})
+            else:
+                messages.error(request, 'Invalid authentication, please try again later')
+        else:
+            messages.error(request, 'User does not exist')
+                
+        return redirect('login')
+
     return render(request, "app/login.html")
 
 def logOut(request):

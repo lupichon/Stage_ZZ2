@@ -1,5 +1,11 @@
 import bluetooth
 
+trigger = 0
+
+find = True
+
+data_microphone = 0
+
 class BluetoothReader:
     def __init__(self, bluetooth_name):
         self.BLUETOOTH_NAME = bluetooth_name
@@ -7,6 +13,7 @@ class BluetoothReader:
         self.connected = False
 
     def connect(self):
+        global find
         try:
             devices = bluetooth.discover_devices(lookup_names=True)
             for addr, name in devices:
@@ -16,6 +23,7 @@ class BluetoothReader:
                     self.connected = True
                     break
             if not self.connected:
+                find = False
                 raise Exception("Bluetooth device not found")
             else:
                 print("Connected to Bluetooth device")
@@ -23,10 +31,15 @@ class BluetoothReader:
             print("Error connecting to Bluetooth device:", e)
 
     def read(self):
+        global trigger, data_microphone
         try:
             while self.connected:
                 data = self.socket.recv(4)
-                print("Received:",data[0] + 16**2*data[1])
+                data_microphone = data[0] + 16**2*data[1]
+                print("Received:",data_microphone)
+                if(data_microphone>1000):
+                    trigger = 1
+
         except Exception as e:
             print("Error reading from Bluetooth device:", e)
             self.connected = False
@@ -41,7 +54,9 @@ class BluetoothReader:
 
 bluetooth_name = "ESP32"
 reader = BluetoothReader(bluetooth_name)
-reader.connect()
-if reader.connected:
-    reader.read()
-    reader.disconnect()
+
+def main():
+    reader.connect()
+    if reader.connected:
+        reader.read()
+        reader.disconnect()

@@ -4,19 +4,23 @@ import time
 
 board = wiiboard.Wiiboard()
 
-FACTOR = 20
 x = 0
 y = 0
 
+find = True
 
 def main():
-	global x, y, topRight, bottomRight, topLeft, bottomLeft
+	global x, y, find
 	pygame.init()
 
 	address = board.discover()
-	board.connect(address) 
-	board.setLight(True)
-	running = True
+	if address is not None : 
+		board.connect(address) 
+		board.setLight(True)
+		running = True
+	else : 
+		running = False
+		find = False
 	
 	while(running and board.status == "Connected"):
 		for event in pygame.event.get():
@@ -30,11 +34,10 @@ def main():
 			elif event.type == wiiboard.WIIBOARD_BUTTON_RELEASE:
 				print("Button released")
 
-			elif event.type == pygame.QUIT:
-				running = False
-			
-	board.disconnect()
+			elif event.type == wiiboard.WIIBOARD_DISCONNECTED:
+				board.disconnect()
+				break
 	pygame.quit()
-	print("end")
+	
 if __name__ == "__main__":
 	main()

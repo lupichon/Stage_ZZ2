@@ -6,5 +6,6 @@ class GravityMeasurement(models.Model):
     measurement_date = models.DateTimeField(auto_now_add=True)
     center_of_gravity_x = models.FloatField()
     center_of_gravity_y = models.FloatField()
+    sound = models.FloatField()
     class Meta:
         ordering = ['-measurement_date']
