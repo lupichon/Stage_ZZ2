@@ -74,21 +74,12 @@ void readMicro()
 
 void sendMicro()
 {
+  peakToPeak = 0;
   if (signalMax>=signalMin)
   {
     peakToPeak = signalMax - signalMin;
-    printf("%d\n",peakToPeak);
-    uint8_t buffer[sizeof(peakToPeak)];
-    memcpy(buffer, &peakToPeak, sizeof(peakToPeak));
-    SerialBT.write(buffer, sizeof(buffer));
-    /*if (Serial.available()) 
-    {
-    SerialBT.write(Serial.read());
-    }
-    if (SerialBT.available()) 
-    {
-      Serial.write(SerialBT.read());
-    }
-    Serial.println(peakToPeak);*/
   }
+  uint8_t buffer[sizeof(peakToPeak)];
+  memcpy(buffer, &peakToPeak, sizeof(peakToPeak));
+  SerialBT.write(buffer, sizeof(buffer));
 }

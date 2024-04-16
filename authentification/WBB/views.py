@@ -5,7 +5,10 @@ import WBB.scripts.dataMicrophone as m
 from django.contrib import messages
 import threading
 from .models import GravityMeasurement
-import time
+from .models import Data
+from datetime import timedelta
+from django.utils import timezone
+import copy
 
 H = 0
 W = 0
@@ -78,16 +81,68 @@ def connectMicrophone(request):
         messages.error(request,"The microphone is already connected")
         return render(request,"app/index.html")
    
-
+LEN = 30
+measure = [[0,0] for _ in range(LEN)]
+data = []
+after = False
+i = 0
 
 def get_point_position(request):
+    global measure, after, i, data
     if w.board.status == "Connected" and m.reader.connected == True:
-        if m.trigger == 1:
-            measurement = GravityMeasurement.objects.create(user=request.user,center_of_gravity_x = float(W)*w.x/2,center_of_gravity_y = -1*float(H)*w.y/2, sound = m.data_microphone)
-            measurement.save()
-            m.trigger = 0
+        measure.pop(0)
+        measure.append([float(W) * w.x / 2, -1 * float(H) * w.y / 2])
+        if after == True and i<LEN: 
+            data.append([measure[LEN-1][0],measure[LEN-1][1]])
+            i = i +1
+            if(i==29) : 
+                i=0
+                after=False
+                measurement = GravityMeasurement.objects.create(user=request.user,shot = data)
+                measurement.save()
+                data = []
+        else : 
+            if m.trigger==True and after == False:
+                data = copy.deepcopy(measure)
+                after = True
+                m.trigger = False
         return JsonResponse({'x': w.x, 'y': w.y})
-    else :
+    else:
         return HttpResponseNotFound("Le tableau n'est pas connecté.")
 
 
+
+
+
+
+
+
+def sort_data(request):
+    #elem = GravityMeasurement.objects.all()
+    elem = list(GravityMeasurement.objects.all())
+    for element in elem : 
+        if element.sound > 1000 : 
+            range = timedelta(seconds=5)
+            start_time = element.measurement_date - range
+            end_time = element.measurement_date + range
+
+            elements_before = GravityMeasurement.objects.filter(measurement_date__gte=start_time, measurement_date__lt=element.measurement_date)
+            elements_after = GravityMeasurement.objects.filter(measurement_date__gt=element.measurement_date, measurement_date__lte=end_time)
+
+            values = []
+
+            for e in elements_before : 
+                values.append([e.center_of_gravity_x,e.center_of_gravity_y])
+                elem.remove(e)
+
+            values.append([element.center_of_gravity_x, element.center_of_gravity_y])
+            elem.remove(values)
+
+            for e in elements_after : 
+                values.append([e.center_of_gravity_x,e.center_of_gravity_y])
+                elem.remove(e)
+
+            data = Data.objects.create(user=request.user,shot=values)
+            data.save()
+    return render(request,"app/index.html")
+    

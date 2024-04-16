@@ -26,5 +26,13 @@
         <div class="point"></div>
 		<div id="x"></div>
 		<div id="y"></div>
+		<div class="container-login100-form-btn">
+			<form action="{% url 'sort_data' %}" method="post" style="display: inline-block;">
+				{% csrf_token %}
+				<button class="login100-form-btn" style="width: 80px; height: 35px; font-size: 12px;">
+					Finish
+				</button>
+			</form>
+		</div>
 	</body>
 </html>

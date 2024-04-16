@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 var relativeX = screenWidth / 2 + x;
                 var relativeY = screenHeight / 2 + y;
 
-                console.error(data)
                 point.style.left = relativeX + "px";
                 point.style.top = relativeY + "px";
 
@@ -40,6 +39,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
-    setInterval(updatePointPosition,100); 
+    setInterval(updatePointPosition,150); 
 });
 

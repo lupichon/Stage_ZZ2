@@ -1,9 +1,7 @@
 import bluetooth
 
-trigger = 0
-
 find = True
-
+trigger = False
 data_microphone = 0
 
 class BluetoothReader:
@@ -36,9 +34,8 @@ class BluetoothReader:
             while self.connected:
                 data = self.socket.recv(4)
                 data_microphone = data[0] + 16**2*data[1]
-                print("Received:",data_microphone)
                 if(data_microphone>1000):
-                    trigger = 1
+                    trigger = True
 
         except Exception as e:
             print("Error reading from Bluetooth device:", e)
