@@ -1,5 +1,5 @@
 #include "driver_microphone.hpp"
-//#include "driver_accelerometer.hpp"
+#include "driver_accelerometer.hpp"
 
 
 void setup()
