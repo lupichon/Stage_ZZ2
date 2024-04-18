@@ -1,20 +1,21 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 import WBB.scripts.main as w
-import WBB.scripts.dataMicrophone as m
+import WBB.scripts.dataSensors as m
 from django.contrib import messages
 import threading
-from .models import GravityMeasurement
+from .models import Data
 from datetime import timedelta
 from django.utils import timezone
 import copy
+import time
 
 H = 0
 W = 0
 
 def wbb(request):
     if w.board.status == "Connected" and m.reader.connected==True:
-        GravityMeasurement.objects.all().delete()
+        Data.objects.all().delete()
         
         global H, W
         context={}
@@ -59,7 +60,7 @@ def connectWiiboard(request):
         messages.error(request,"The Wiiboard is already connected")
         return render(request,"app/index.html")
 
-def connectMicrophone(request):
+def connectSensors(request):
     if(m.reader.connected == False):
         m.finish = False
         Sensors_thread = threading.Thread(target=m.main)
@@ -70,9 +71,9 @@ def connectMicrophone(request):
             pass
 
         if m.reader.connected == False:
-            messages.error(request, "Microphone not connected, please try again")
+            messages.error(request, "Microphone and accelerometer not connected, please try again")
         else : 
-            messages.success(request, "Microphone connected")
+            messages.success(request, "Microphone and accelerometer connected")
     
         m.find = True
         return render(request,"app/index.html")
@@ -83,33 +84,79 @@ def connectMicrophone(request):
         return render(request,"app/index.html")
    
 LEN = 30
-measure = [[0,0] for _ in range(LEN)]
+measure_gc = [[0,0] for _ in range(LEN)]
 data = []
 after = False
 i = 0
 
+LEN_ACC = 30
+measure_acc = [[0,0,0] for _ in range(LEN_ACC)]
+data_acc = []
+after_acc = False
+ind_acc = 0
+
+OK_ACC = False
+OK_GC = False
+
+ENABLE = False
+time_before = 0
+
 def get_point_position(request):
-    global measure, after, i, data
+    global OK_ACC, OK_GC, data, data_acc, ENABLE, time_before
     if w.board.status == "Connected" and m.reader.connected == True:
-        measure.pop(0)
-        measure.append([float(W) * w.x / 2, -1 * float(H) * w.y / 2])
-        if after == True and i<LEN: 
-            data.append([measure[LEN-1][0],measure[LEN-1][1]])
-            i = i +1
-            if(i==29) : 
-                i=0
-                after=False
-                measurement = GravityMeasurement.objects.create(user=request.user,shot = data)
-                measurement.save()
-                data = []
-        else : 
-            if m.trigger==True and after == False:
-                data = copy.deepcopy(measure)
-                after = True
-                m.trigger = False
+        ENABLE = m.trigger
+        m.trigger = False
+        saveGravityCenter()
+        saveAcc()
+        if(OK_ACC and OK_GC and time.time() - time_before>5):
+            time_before = time.time()
+            measurement = Data.objects.create(user=request.user,gravity_center = data, acceleration = data_acc)
+            measurement.save()
+            data = []
+            data_acc = []
+            OK_ACC = False
+            OK_GC = False
+
         return JsonResponse({'x': w.x, 'y': w.y})
     else:
-        return HttpResponseNotFound("Le tableau n'est pas connecté.")
+        return HttpResponseNotFound("error")
+    
+def saveGravityCenter():
+    global measure_gc, after, i, data, OK_GC
+
+    measure_gc.pop(0)
+    measure_gc.append([float(W) * w.x / 2, -1 * float(H) * w.y / 2])
+    if after == True and i<LEN: 
+        data.append([measure_gc[LEN-1][0],measure_gc[LEN-1][1]])
+        i = i +1
+        if(i==LEN-1) : 
+            i=0
+            after=False
+            OK_GC = True
+    else : 
+        if ENABLE==True and after == False and OK_GC == False:
+            data = copy.deepcopy(measure_gc)
+            after = True
+
+def saveAcc():
+    global measure_acc, after_acc, ind_acc, data_acc, OK_ACC
+
+    measure_acc.pop(0)
+    measure_acc.append([m.acceleration_x,m.acceleration_y,m.acceleration_z])
+
+    if after_acc == True and i<LEN_ACC: 
+        data_acc.append([measure_acc[LEN_ACC-1][0],measure_acc[LEN_ACC-1][1],measure_acc[LEN_ACC-1][2]])
+        ind_acc = ind_acc +1
+
+        if(ind_acc==LEN_ACC-1) : 
+            ind_acc = 0
+            after_acc =False
+            OK_ACC = True
+    else : 
+        if ENABLE ==True and after_acc == False and OK_ACC == False:
+            data_acc = copy.deepcopy(measure_acc)
+            after_acc = True
+
 
 
 def finish(request):
