@@ -5,12 +5,5 @@ class GravityMeasurement(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     measurement_date = models.DateTimeField(auto_now_add=True)
     shot = models.JSONField()
-    #center_of_gravity_x = models.FloatField()
-    #center_of_gravity_y = models.FloatField()
-    #sound = models.FloatField()
     class Meta:
         ordering = ['-measurement_date']
-
-class Data(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    shot = models.JSONField()

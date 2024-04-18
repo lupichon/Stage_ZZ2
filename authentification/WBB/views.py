@@ -5,7 +5,6 @@ import WBB.scripts.dataMicrophone as m
 from django.contrib import messages
 import threading
 from .models import GravityMeasurement
-from .models import Data
 from datetime import timedelta
 from django.utils import timezone
 import copy
@@ -16,6 +15,7 @@ W = 0
 def wbb(request):
     if w.board.status == "Connected" and m.reader.connected==True:
         GravityMeasurement.objects.all().delete()
+        
         global H, W
         context={}
         if request.method == "POST" : 
@@ -61,6 +61,7 @@ def connectWiiboard(request):
 
 def connectMicrophone(request):
     if(m.reader.connected == False):
+        m.finish = False
         Sensors_thread = threading.Thread(target=m.main)
         Sensors_thread.daemon = True  
         Sensors_thread.start()
@@ -111,38 +112,8 @@ def get_point_position(request):
         return HttpResponseNotFound("Le tableau n'est pas connecté.")
 
 
-
-
-
-
-
-
-def sort_data(request):
-    #elem = GravityMeasurement.objects.all()
-    elem = list(GravityMeasurement.objects.all())
-    for element in elem : 
-        if element.sound > 1000 : 
-            range = timedelta(seconds=5)
-            start_time = element.measurement_date - range
-            end_time = element.measurement_date + range
-
-            elements_before = GravityMeasurement.objects.filter(measurement_date__gte=start_time, measurement_date__lt=element.measurement_date)
-            elements_after = GravityMeasurement.objects.filter(measurement_date__gt=element.measurement_date, measurement_date__lte=end_time)
-
-            values = []
-
-            for e in elements_before : 
-                values.append([e.center_of_gravity_x,e.center_of_gravity_y])
-                elem.remove(e)
-
-            values.append([element.center_of_gravity_x, element.center_of_gravity_y])
-            elem.remove(values)
-
-            for e in elements_after : 
-                values.append([e.center_of_gravity_x,e.center_of_gravity_y])
-                elem.remove(e)
-
-            data = Data.objects.create(user=request.user,shot=values)
-            data.save()
+def finish(request):
+    m.finish = True
+    w.running = False
+    messages.success(request,"Measures finished")
     return render(request,"app/index.html")
-    

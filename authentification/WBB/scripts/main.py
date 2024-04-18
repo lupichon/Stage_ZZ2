@@ -8,9 +8,10 @@ x = 0
 y = 0
 
 find = True
+running = True
 
 def main():
-	global x, y, find
+	global x, y, find, running
 	pygame.init()
 
 	address = board.discover()
@@ -37,6 +38,9 @@ def main():
 			elif event.type == wiiboard.WIIBOARD_DISCONNECTED:
 				board.disconnect()
 				break
+			
+	if running == False : 
+		board.disconnect()
 	pygame.quit()
 	
 if __name__ == "__main__":

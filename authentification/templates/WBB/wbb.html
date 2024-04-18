@@ -4,35 +4,38 @@
 <html lang="en">
 
 	<head>
-		<!-- titre de la fenêtre -->
-		<title>main page</title>
-
-		<!-- précise l'encodage au navigateur (gestion des accents, ...) -->
+		<title>Gravity Center</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
-		<!-- Feuilles de style -->
-		<link rel="stylesheet" type="text/css" href="{% static 'CSS/styles.css' %}">
-
-		<!-- Inhibe la grande largeur sur mobile : évite que le mobile présente un écran large et qu'il faille zoomer -->
 		<meta name="viewport" content="initial-scale=1.0, maximum-scale=2.0" />
-
-		<!-- icône de la page -->
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="icon" type="image/png" href="{% static 'IMAGES/icons/favicon.ico' %}"/>
+		<link rel="stylesheet" type="text/css" href="{% static 'FONT/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'FONT/iconic/css/material-design-iconic-font.min.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'CSS/util.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'CSS/main.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'CSS/styles.css' %}">
 	</head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{% static 'JS/updatePoint.js' %}"></script>
     <body>	
-		<div id="dim" data-height="{{ height }}" data-width="{{ width }}"></div>
-        <div  class="rectangle"></div>
-        <div class="point"></div>
-		<div id="x"></div>
-		<div id="y"></div>
-		<div class="container-login100-form-btn">
-			<form action="{% url 'sort_data' %}" method="post" style="display: inline-block;">
-				{% csrf_token %}
-				<button class="login100-form-btn" style="width: 80px; height: 35px; font-size: 12px;">
-					Finish
-				</button>
-			</form>
+		<div class="limiter">
+			<div class="container-login100" style="background-image: url('{% static "IMAGES/bg-01.jpg" %}');">
+				<div id="dim" data-height="{{ height }}" data-width="{{ width }}"></div>
+				<div class="rectangle">
+					<div id="x" style="position: absolute; top: 105%; left: 46%;"></div>
+					<div id="y" style="position: absolute; top: 115%; left: 46%;"></div>
+					<div style = "position: absolute; top: 125%; left: 32%;">
+						<form action="{% url 'finish' %}" method="post" style="display: inline-block; margin-left: 15px;">
+							{% csrf_token %}
+							<button class="login100-form-btn" style="width: 80px; height: 35px; font-size: 12px;">
+								Finish
+							</button>
+						</form>
+					</div>
+				</div>
+				<div class="point"></div>
+			</div>
 		</div>
 	</body>
 </html>

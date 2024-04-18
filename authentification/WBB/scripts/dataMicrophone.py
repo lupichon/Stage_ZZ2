@@ -1,6 +1,8 @@
 import bluetooth
+import time
 
 find = True
+finish = False
 trigger = False
 data_microphone = 0
 
@@ -29,13 +31,16 @@ class BluetoothReader:
             print("Error connecting to Bluetooth device:", e)
 
     def read(self):
-        global trigger, data_microphone
+        global trigger, data_microphone,finish
+        time_before = 0
         try:
-            while self.connected:
+            while self.connected and not finish:
                 data = self.socket.recv(4)
                 data_microphone = data[0] + 16**2*data[1]
-                if(data_microphone>1000):
+                print(data)
+                if(data_microphone>1000 and time.time() - time_before >3):
                     trigger = True
+                    time_before = time.time()
 
         except Exception as e:
             print("Error reading from Bluetooth device:", e)

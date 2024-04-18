@@ -90,11 +90,11 @@ class Wiiboard:
 	# Disconnect from the Wiiboard
 	def disconnect(self):
 		try:
+			self.status = "Disconnected"
 			self.receivesocket.close()
 			self.controlsocket.close()
 			self.receivesocket = None
 			self.controlsocket = None
-			self.status = "Disconnected"
 		except:
 			pass
 		print("WiiBoard disconnected")
