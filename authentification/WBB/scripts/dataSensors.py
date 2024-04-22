@@ -42,9 +42,9 @@ class BluetoothReader:
             while self.connected and not finish:
                 data = self.socket.recv(16)
                 data_microphone = data[0] + 16**2*data[1]
-                acceleration_x = struct.unpack('f', data[4:8])[0]
-                acceleration_y = struct.unpack('f', data[8:12])[0]
-                acceleration_z = struct.unpack('f', data[12:16])[0]
+                acceleration_x = round(struct.unpack('f', data[4:8])[0],2)
+                acceleration_y = round(struct.unpack('f', data[8:12])[0],2)
+                acceleration_z = round(struct.unpack('f', data[12:16])[0],2)
             
                 if(data_microphone>1000 and time.time() - time_before >5):
                     trigger = True

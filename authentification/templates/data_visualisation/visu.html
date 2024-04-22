@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Gravity Center</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="icon" type="image/png" href="{% static 'IMAGES/icons/favicon.ico' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'FONT/font-awesome-4.7.0/css/font-awesome.min.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'FONT/iconic/css/material-design-iconic-font.min.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'CSS/util.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'CSS/main.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'CSS/styles.css' %}"/>
+</head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'JS/visualisationPoint.js' %}"></script>
+<script src="{% static 'JS/visualisationAcc.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<body>
+    <canvas id="chart1" width="50" height="50"></canvas>
+    <canvas id="chart2" width="50" height="50"></canvas>
+    <canvas id="chart3" width="50" height="50"></canvas>
+
+    <div class="limiter">
+        <div class="container-login100" style="background-image: url('{% static "IMAGES/bg-01.jpg" %}');">
+
+            <div class="point" style="width: 5px; height: 5px;"></div>
+            <div id="dim" data-height="{{ height }}" data-width="{{ width }}"></div>
+            <div class="canvas-container">
+                <canvas id="myCanvas" class="canvas" width="500" height="500"></canvas>
+            </div>
+		</div>
+	</div>
+</body>

@@ -4,7 +4,7 @@
 <html lang="en">
 
 	<head>
-		<title>Gravity Center</title>
+		<title>Measures</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<meta name="viewport" content="initial-scale=1.0, maximum-scale=2.0" />
 		<meta charset="UTF-8">
@@ -21,19 +21,22 @@
     <body>	
 		<div class="limiter">
 			<div class="container-login100" style="background-image: url('{% static "IMAGES/bg-01.jpg" %}');">
+				<div id="acc_x" style="position: absolute; top: 3%; left: 0%;"></div>
+				<div id="acc_y" style="position: absolute; top: 6%; left: 0%;"></div>
+				<div id="acc_z" style="position: absolute; top: 9%; left: 0%;"></div>
 				<div id="dim" data-height="{{ height }}" data-width="{{ width }}"></div>
-				<div class="rectangle">
-					<div id="x" style="position: absolute; top: 105%; left: 46%;"></div>
-					<div id="y" style="position: absolute; top: 115%; left: 46%;"></div>
-					<div style = "position: absolute; top: 125%; left: 32%;">
-						<form action="{% url 'finish' %}" method="post" style="display: inline-block; margin-left: 15px;">
-							{% csrf_token %}
-							<button class="login100-form-btn" style="width: 80px; height: 35px; font-size: 12px;">
-								Finish
-							</button>
-						</form>
+					<div class="rectangle">
+						<div id="x" style="position: absolute; top: 105%; left: 46%;"></div>
+						<div id="y" style="position: absolute; top: 115%; left: 46%;"></div>
+						<div style = "position: absolute; top: 125%; left: 32%;">
+							<form action="{% url 'finish' %}" method="post" style="display: inline-block; margin-left: 15px;">
+								{% csrf_token %}
+								<button class="login100-form-btn" style="width: 80px; height: 35px; font-size: 12px;">
+									Finish
+								</button>
+							</form>
+						</div>
 					</div>
-				</div>
 				<div class="point"></div>
 			</div>
 		</div>

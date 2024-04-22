@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "app",
     "WBB",
+    "data_visualisation",
 ]
 
 MIDDLEWARE = [

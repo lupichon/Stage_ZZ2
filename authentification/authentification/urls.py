@@ -22,4 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("",include('app.urls')),
     path("",include('WBB.urls')),
+    path("",include('data_visualisation.urls')),
 ]

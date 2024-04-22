@@ -9,15 +9,27 @@ from datetime import timedelta
 from django.utils import timezone
 import copy
 import time
+from django.db.models import Max
 
 H = 0
 W = 0
 
+new_session = True
+shot_id = 1
+session_id = 0
+
 def wbb(request):
+    global H, W, session_id, new_session
+
     if w.board.status == "Connected" and m.reader.connected==True:
-        Data.objects.all().delete()
+        session_id = Data.objects.filter(user=request.user).aggregate(Max('session_id'))['session_id__max']
+        if session_id is None :
+            session_id = 0
         
-        global H, W
+        if new_session : 
+            session_id = session_id + 1
+            new_session = False
+        
         context={}
         if request.method == "POST" : 
             hauteur = request.POST['height']
@@ -35,7 +47,7 @@ def wbb(request):
             return render(request,"app/index.html")
     
     else:
-        messages.error(request, "The microphone and the wiiboard must be connected before start")
+        messages.error(request, "The sensors and the wiiboard must be connected before start")
         return render(request,"app/index.html")
     
 def connectWiiboard(request):
@@ -80,29 +92,28 @@ def connectSensors(request):
     
     else:
         m.find = True
-        messages.error(request,"The microphone is already connected")
+        messages.error(request,"The sensors are already connected")
         return render(request,"app/index.html")
    
-LEN = 30
-measure_gc = [[0,0] for _ in range(LEN)]
-data = []
-after = False
-i = 0
+LEN_GC = 30
+measure_gc = [[0,0] for _ in range(LEN_GC)]
+data_gc = []
+after_gc = False
+ind_gc = 0
+OK_GC = False
 
 LEN_ACC = 30
 measure_acc = [[0,0,0] for _ in range(LEN_ACC)]
 data_acc = []
 after_acc = False
 ind_acc = 0
-
 OK_ACC = False
-OK_GC = False
 
 ENABLE = False
 time_before = 0
 
 def get_point_position(request):
-    global OK_ACC, OK_GC, data, data_acc, ENABLE, time_before
+    global OK_ACC, OK_GC, data_gc, data_acc, ENABLE, time_before, session_id, shot_id
     if w.board.status == "Connected" and m.reader.connected == True:
         ENABLE = m.trigger
         m.trigger = False
@@ -110,33 +121,34 @@ def get_point_position(request):
         saveAcc()
         if(OK_ACC and OK_GC and time.time() - time_before>5):
             time_before = time.time()
-            measurement = Data.objects.create(user=request.user,gravity_center = data, acceleration = data_acc)
+            measurement = Data.objects.create(user=request.user,session_id = session_id, shot_id = shot_id, gravity_center = data_gc, acceleration = data_acc, height=float(H), width=float(W))
             measurement.save()
-            data = []
+            shot_id = shot_id + 1
+            data_gc = []
             data_acc = []
             OK_ACC = False
             OK_GC = False
 
-        return JsonResponse({'x': w.x, 'y': w.y})
+        return JsonResponse({'x': w.x, 'y': w.y, 'acc_x' : m.acceleration_x, 'acc_y' : m.acceleration_y, 'acc_z' : m.acceleration_z})
     else:
         return HttpResponseNotFound("error")
     
 def saveGravityCenter():
-    global measure_gc, after, i, data, OK_GC
+    global measure_gc, after_gc, ind_gc, data_gc, OK_GC
 
     measure_gc.pop(0)
-    measure_gc.append([float(W) * w.x / 2, -1 * float(H) * w.y / 2])
-    if after == True and i<LEN: 
-        data.append([measure_gc[LEN-1][0],measure_gc[LEN-1][1]])
-        i = i +1
-        if(i==LEN-1) : 
-            i=0
-            after=False
+    measure_gc.append([float(W) * w.x / 2, float(H) * w.y / 2])
+    if after_gc == True and ind_gc<LEN_GC: 
+        data_gc.append([measure_gc[LEN_GC-1][0],measure_gc[LEN_GC-1][1]])
+        ind_gc = ind_gc +1
+        if(ind_gc==LEN_GC-1) : 
+            ind_gc=0
+            after_gc=False
             OK_GC = True
     else : 
-        if ENABLE==True and after == False and OK_GC == False:
-            data = copy.deepcopy(measure_gc)
-            after = True
+        if ENABLE==True and after_gc == False and OK_GC == False:
+            data_gc = copy.deepcopy(measure_gc)
+            after_gc = True
 
 def saveAcc():
     global measure_acc, after_acc, ind_acc, data_acc, OK_ACC
@@ -144,7 +156,7 @@ def saveAcc():
     measure_acc.pop(0)
     measure_acc.append([m.acceleration_x,m.acceleration_y,m.acceleration_z])
 
-    if after_acc == True and i<LEN_ACC: 
+    if after_acc == True and ind_acc<LEN_ACC: 
         data_acc.append([measure_acc[LEN_ACC-1][0],measure_acc[LEN_ACC-1][1],measure_acc[LEN_ACC-1][2]])
         ind_acc = ind_acc +1
 
@@ -157,10 +169,12 @@ def saveAcc():
             data_acc = copy.deepcopy(measure_acc)
             after_acc = True
 
-
-
 def finish(request):
+    global new_session, shot_id
+    shot_id = 1
     m.finish = True
     w.running = False
     messages.success(request,"Measures finished")
+    new_session = True
     return render(request,"app/index.html")
+
