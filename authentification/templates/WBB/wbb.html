@@ -17,13 +17,15 @@
 		<link rel="stylesheet" type="text/css" href="{% static 'CSS/styles.css' %}">
 	</head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'JS/updatePoint.js' %}"></script>
     <body>	
+		<canvas id="chart1" width="50" height="50"></canvas>
+		<div id="acc_x" ></div>
+		<div id="acc_y" ></div>
+		<div id="acc_z" ></div>
 		<div class="limiter">
 			<div class="container-login100" style="background-image: url('{% static "IMAGES/bg-01.jpg" %}');">
-				<div id="acc_x" style="position: absolute; top: 3%; left: 0%;"></div>
-				<div id="acc_y" style="position: absolute; top: 6%; left: 0%;"></div>
-				<div id="acc_z" style="position: absolute; top: 9%; left: 0%;"></div>
 				<div id="dim" data-height="{{ height }}" data-width="{{ width }}"></div>
 					<div class="rectangle">
 						<div id="x" style="position: absolute; top: 105%; left: 46%;"></div>

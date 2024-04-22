@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function() {
         var canvasWidth = parseInt(dimElement.getAttribute('data-width'));
         canvas.width = canvasWidth * Factor;
         canvas.height = canvasHeight * Factor;
-        setInterval(getVisualisationData, 150);
+        setInterval(getVisualisationData, 100);
     }
 
     initVisualisation();
