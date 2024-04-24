@@ -49,7 +49,6 @@ def register(request):
         my_user.is_active = False
         my_user.save()
 
-        #envoi d'email de bienvenu
         messages.success(request, 'Your account has been successfully created')
         subject = "Welcome!"
         message = "Welcome " + my_user.first_name + " " + my_user.last_name + "\nWe are happy to have you with us\n\n\n Thank you! \n\n"
@@ -57,7 +56,6 @@ def register(request):
         to_list = [my_user.email]
         send_mail(subject,message,from_email,to_list,fail_silently=False)
 
-        #email de confirmation
         current_site = get_current_site(request)
         subject = "Confirmation of your email address"
         message = render_to_string("emailconfirm.html",{

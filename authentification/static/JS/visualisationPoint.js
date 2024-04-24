@@ -1,10 +1,35 @@
 document.addEventListener("DOMContentLoaded", function() {
 
 
-    var Factor = 10;
+    var Factor = 20;
     var canvas = document.getElementById('myCanvas');
     var ctx = canvas.getContext('2d');
-    var point = document.getElementsByClassName("point")[0];
+    var slider = document.getElementById("myRange");
+    var interval;
+    var html_x = document.getElementById('x');
+    var html_y = document.getElementById('y');
+    var start_stop = document.getElementById('start_stop');
+
+    start_stop.addEventListener('click',function(){
+        if(interval)
+        {
+            clearInterval(interval);
+            interval = null;
+        }
+        else
+        {
+            interval = setInterval(getVisualisationData, slider.value);
+        }
+    });
+
+    slider.oninput = function() 
+    {
+        if(interval)
+        {
+            clearInterval(interval);
+            interval = setInterval(getVisualisationData, this.value);
+        }
+    } 
     
     function drawVisualisationPoint(x, y, color, taille) 
     {
@@ -15,26 +40,24 @@ document.addEventListener("DOMContentLoaded", function() {
         ctx.closePath();
     }
 
-    
+
     function clearCanvas() 
     {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
     function updateVisualisation(data) {
-        var screenWidth = window.innerWidth;
-        var screenHeight = window.innerHeight;
         if (data.status != 2) 
         {
+            html_x.textContent = "X = " + data.x.toFixed(2);
+            html_y.textContent = "Y = " + data.y.toFixed(2);
+
             var height = data.height;
             var width = data.width;
 
-            var relativeX = screenWidth / 2 + Math.round(data.x * Factor);
-            var relativeY = screenHeight / 2 - Math.round(data.y * Factor);
-
             var x_tail = Factor * width / 2 + Math.round(data.x * Factor);
             var y_tail = Factor * height / 2 - Math.round(data.y * Factor);
-
+            
             if(data.status == 1)
             {
                 var color = 'red';
@@ -47,12 +70,12 @@ document.addEventListener("DOMContentLoaded", function() {
             }
             drawVisualisationPoint(x_tail, y_tail, color, taille);
 
-            point.style.left = relativeX + "px";
-            point.style.top = relativeY + "px";
         } 
         else 
         {
             clearCanvas();
+            html_x.textContent = "X = " ;
+            html_y.textContent = "Y = " ;
         }
     }
 
@@ -80,8 +103,9 @@ document.addEventListener("DOMContentLoaded", function() {
         var canvasWidth = parseInt(dimElement.getAttribute('data-width'));
         canvas.width = canvasWidth * Factor;
         canvas.height = canvasHeight * Factor;
-        setInterval(getVisualisationData, 100);
+        interval = setInterval(getVisualisationData, slider.value);
     }
+
 
     initVisualisation();
 

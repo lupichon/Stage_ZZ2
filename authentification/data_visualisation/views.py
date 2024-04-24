@@ -3,9 +3,12 @@ from WBB.models import Data
 import json
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
+from django.db.models import Max
+from WBB.models import Data
 
 def data_visualisation(request):
-    return render(request,"data_visualisation/main_page.html")
+    lastID = Data.objects.filter(user=request.user).aggregate(Max('session_id'))['session_id__max']
+    return render(request,"data_visualisation/main_page.html",{'lastID': lastID})
 
 data = None
 gravity_center = []
@@ -39,6 +42,8 @@ def get_visualisation(request):
         context = {
                 'width' : data.width,
                 'height' : data.height,
+                'sessionID' : sessionID,
+                'shotID' : shotID,
                 }
         return render(request,"data_visualisation/visu.html",context)
     except : 

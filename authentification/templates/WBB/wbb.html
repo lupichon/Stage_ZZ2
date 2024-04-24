@@ -20,27 +20,28 @@
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{% static 'JS/updatePoint.js' %}"></script>
     <body>	
+		<div class="limiter">
+			<div class="container-login100" style="background-image: url('{% static "IMAGES/bg-01.jpg" %}');">
+				<div id="dim" data-height="{{ height }}" data-width="{{ width }}"></div>
+				<span id="session-info" class="login100-form-title p-b-34 p-t-27" style="color: black; font-size: 14px; position: absolute; top: 10px; left: 10px;"></span>
+				<div class="rectangle">
+					<div id="x" style="position: relative; top: 105%; left: 48%;"></div>
+					<div id="y" style="position: relative; top: 107%; left: 48%;"></div>
+					<div style="position: relative; top: 109%; left: 41%;">
+						<form action="{% url 'finish' %}" method="post" style="display: inline-block; margin-left: 15px;">
+							{% csrf_token %}
+							<button class="login100-form-btn" style="width: 80px; height: 35px; font-size: 12px;">
+								Finish
+							</button>
+						</form>
+					</div>
+				</div>
+				<div class="point"></div>
+			</div>			
+		</div>
 		<canvas id="chart1" width="50" height="50"></canvas>
 		<div id="acc_x" ></div>
 		<div id="acc_y" ></div>
 		<div id="acc_z" ></div>
-		<div class="limiter">
-			<div class="container-login100" style="background-image: url('{% static "IMAGES/bg-01.jpg" %}');">
-				<div id="dim" data-height="{{ height }}" data-width="{{ width }}"></div>
-					<div class="rectangle">
-						<div id="x" style="position: absolute; top: 105%; left: 46%;"></div>
-						<div id="y" style="position: absolute; top: 115%; left: 46%;"></div>
-						<div style = "position: absolute; top: 125%; left: 32%;">
-							<form action="{% url 'finish' %}" method="post" style="display: inline-block; margin-left: 15px;">
-								{% csrf_token %}
-								<button class="login100-form-btn" style="width: 80px; height: 35px; font-size: 12px;">
-									Finish
-								</button>
-							</form>
-						</div>
-					</div>
-				<div class="point"></div>
-			</div>
-		</div>
 	</body>
 </html>

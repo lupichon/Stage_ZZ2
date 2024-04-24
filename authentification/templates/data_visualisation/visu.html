@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Gravity Center</title>
+	<title>Data Visualisation</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -19,16 +19,26 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <body>
-    <canvas id="chart1" width="50" height="50"></canvas>
-    
     <div class="limiter">
         <div class="container-login100" style="background-image: url('{% static "IMAGES/bg-01.jpg" %}');">
-
-            <div class="point" style="width: 5px; height: 5px;"></div>
+			<span class="login100-form-title p-b-34 p-t-27" style="color: black; font-size: 14px; position: absolute; top: 10px; left: 10px;">
+				<strong> Session ID : {{ sessionID}} <br><br></strong>
+				<strong> Shot number {{ shotID }} <br><br></strong>
+				<div id="x"></div>
+				<div id="y"></div>
+			</span>
             <div id="dim" data-height="{{ height }}" data-width="{{ width }}"></div>
+
             <div class="canvas-container">
                 <canvas id="myCanvas" class="canvas" width="500" height="500"></canvas>
             </div>
+
+			<input type="range" min="10" max="1000" value="10" class="slider" id="myRange">
+			<button id="start_stop" class="login100-form-btn" style="width: 80px; height: 35px; font-size: 12px;position: absolute; right: 150px; top: 60px">
+				Stop/Start
+			</button>
 		</div>
 	</div>
+	<canvas id="chart1" width="50" height="50"></canvas>
+	
 </body>

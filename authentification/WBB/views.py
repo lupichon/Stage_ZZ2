@@ -16,13 +16,17 @@ W = 0
 
 new_session = True
 shot_id = 1
-session_id = 0
+session_id = None
+first_connexion = True
 
 def wbb(request):
-    global H, W, session_id, new_session
+    global H, W, session_id, new_session, first_connexion
 
     if w.board.status == "Connected" and m.reader.connected==True:
-        session_id = Data.objects.filter(user=request.user).aggregate(Max('session_id'))['session_id__max']
+        if first_connexion : 
+            session_id = Data.objects.filter(user=request.user).aggregate(Max('session_id'))['session_id__max']
+            first_connexion = False
+
         if session_id is None :
             session_id = 0
         
@@ -37,6 +41,8 @@ def wbb(request):
             context = {
                 'width' : largeur,
                 'height' : hauteur,
+                'sessionID' : session_id,
+                'shotID' : shot_id,
             }
             H = context['height']
             W = context['width']
@@ -95,14 +101,14 @@ def connectSensors(request):
         messages.error(request,"The sensors are already connected")
         return render(request,"app/index.html")
    
-LEN_GC = 30
+LEN_GC = 100
 measure_gc = [[0,0] for _ in range(LEN_GC)]
 data_gc = []
 after_gc = False
 ind_gc = 0
 OK_GC = False
 
-LEN_ACC = 30
+LEN_ACC = 100
 measure_acc = [[0,0,0] for _ in range(LEN_ACC)]
 data_acc = []
 after_acc = False
@@ -119,7 +125,7 @@ def get_point_position(request):
         m.trigger = False
         saveGravityCenter()
         saveAcc()
-        if(OK_ACC and OK_GC and time.time() - time_before>5):
+        if(OK_ACC and OK_GC and time.time() - time_before>10):
             time_before = time.time()
             measurement = Data.objects.create(user=request.user,session_id = session_id, shot_id = shot_id, gravity_center = data_gc, acceleration = data_acc, height=float(H), width=float(W))
             measurement.save()
@@ -129,7 +135,7 @@ def get_point_position(request):
             OK_ACC = False
             OK_GC = False
 
-        return JsonResponse({'x': w.x, 'y': w.y, 'acc_x' : m.acceleration_x, 'acc_y' : m.acceleration_y, 'acc_z' : m.acceleration_z})
+        return JsonResponse({'x': w.x, 'y': w.y, 'acc_x' : m.acceleration_x, 'acc_y' : m.acceleration_y, 'acc_z' : m.acceleration_z, 'sessionID' : session_id, 'shotID': shot_id})
     else:
         return HttpResponseNotFound("error")
     
