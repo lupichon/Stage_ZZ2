@@ -21,7 +21,7 @@ acc = []
 
 
 def get_visualisation(request):
-    global data, gravity_center, width, height, LEN, ind, acc, ind_acc, LEN_ACC
+    global data, gravity_center, width, height, LEN, ind, acc, ind_acc
     ind = 0
     ind_acc = 0
     if request.method == "POST" : 
@@ -35,7 +35,6 @@ def get_visualisation(request):
         LEN = len(gravity_center)
 
         acc = data.acceleration
-        LEN_ACC = len(acc)
 
         width = data.width
         height = data.height

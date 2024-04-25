@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, JsonResponse, HttpResponseNotFound, HttpRequest
 import WBB.scripts.main as w
 import WBB.scripts.dataSensors as m
 from django.contrib import messages
@@ -47,6 +48,7 @@ def wbb(request):
             H = context['height']
             W = context['width']
         if hauteur!="" and largeur!="" :
+            m.trigger = False
             return render(request,"WBB/wbb.html",context)
         else:
             messages.error(request,"Please, entry the height and the width")
@@ -101,79 +103,100 @@ def connectSensors(request):
         messages.error(request,"The sensors are already connected")
         return render(request,"app/index.html")
    
-LEN_GC = 100
-measure_gc = [[0,0] for _ in range(LEN_GC)]
+LEN_GC = 30
+before_gc = True
+measure_gc_after = []
+measure_gc_before = [[0,0] for _ in range(LEN_GC)]
 data_gc = []
-after_gc = False
 ind_gc = 0
-OK_GC = False
 
 LEN_ACC = 100
-measure_acc = [[0,0,0] for _ in range(LEN_ACC)]
+before_acc = True
+measure_acc_after = []
+measure_acc_before = [[0,0,0] for _ in range(LEN_ACC)]
 data_acc = []
-after_acc = False
 ind_acc = 0
-OK_ACC = False
-
-ENABLE = False
-time_before = 0
 
 def get_point_position(request):
-    global OK_ACC, OK_GC, data_gc, data_acc, ENABLE, time_before, session_id, shot_id
-    if w.board.status == "Connected" and m.reader.connected == True:
-        ENABLE = m.trigger
-        m.trigger = False
-        saveGravityCenter()
-        saveAcc()
-        if(OK_ACC and OK_GC and time.time() - time_before>10):
-            time_before = time.time()
-            measurement = Data.objects.create(user=request.user,session_id = session_id, shot_id = shot_id, gravity_center = data_gc, acceleration = data_acc, height=float(H), width=float(W))
-            measurement.save()
-            shot_id = shot_id + 1
-            data_gc = []
-            data_acc = []
-            OK_ACC = False
-            OK_GC = False
+    global ind_gc
+    X = w.x 
+    Y = w.y 
 
-        return JsonResponse({'x': w.x, 'y': w.y, 'acc_x' : m.acceleration_x, 'acc_y' : m.acceleration_y, 'acc_z' : m.acceleration_z, 'sessionID' : session_id, 'shotID': shot_id})
-    else:
-        return HttpResponseNotFound("error")
+    if before_gc : 
+        measure_gc_before.pop(0)
+        measure_gc_before.append([float(W) * X / 2, float(H) * Y / 2])
+        ind_gc = 0
     
-def saveGravityCenter():
-    global measure_gc, after_gc, ind_gc, data_gc, OK_GC
+    else :
+        if ind_gc < LEN_GC :
+            measure_gc_after.append([float(W) * X / 2, float(H) * Y / 2])
+            ind_gc = ind_gc + 1
 
-    measure_gc.pop(0)
-    measure_gc.append([float(W) * w.x / 2, float(H) * w.y / 2])
-    if after_gc == True and ind_gc<LEN_GC: 
-        data_gc.append([measure_gc[LEN_GC-1][0],measure_gc[LEN_GC-1][1]])
-        ind_gc = ind_gc +1
-        if(ind_gc==LEN_GC-1) : 
-            ind_gc=0
-            after_gc=False
-            OK_GC = True
-    else : 
-        if ENABLE==True and after_gc == False and OK_GC == False:
-            data_gc = copy.deepcopy(measure_gc)
-            after_gc = True
+    return JsonResponse({'x': X, 'y': Y, 'sessionID': session_id, 'shotID': shot_id})
 
-def saveAcc():
-    global measure_acc, after_acc, ind_acc, data_acc, OK_ACC
+def get_Acc(request):
+    global ind_acc
 
-    measure_acc.pop(0)
-    measure_acc.append([m.acceleration_x,m.acceleration_y,m.acceleration_z])
+    Ax = m.acceleration_x
+    Ay = m.acceleration_y
+    Az = m.acceleration_z
 
-    if after_acc == True and ind_acc<LEN_ACC: 
-        data_acc.append([measure_acc[LEN_ACC-1][0],measure_acc[LEN_ACC-1][1],measure_acc[LEN_ACC-1][2]])
-        ind_acc = ind_acc +1
+    if before_acc : 
+        measure_acc_before.pop(0)
+        measure_acc_before.append([Ax,Ay,Az])
+        ind_acc = 0
 
-        if(ind_acc==LEN_ACC-1) : 
-            ind_acc = 0
-            after_acc =False
-            OK_ACC = True
-    else : 
-        if ENABLE ==True and after_acc == False and OK_ACC == False:
-            data_acc = copy.deepcopy(measure_acc)
-            after_acc = True
+    else:
+        if ind_acc < LEN_ACC:
+            measure_acc_after.append([Ax,Ay,Az])
+            ind_acc = ind_acc + 1
+
+    return JsonResponse({'acc_x' : Ax, 'acc_y' : Ay, 'acc_z' : Az})
+
+def save_Measure(request):
+    global measure_acc_before, measure_gc_before, shot_id, session_id, H, W, before_gc, measure_gc_after, before_acc, measure_acc_after
+    if m.trigger: 
+        m.trigger = False
+
+        data_gc = copy.deepcopy(measure_gc_before)
+        data_acc = copy.deepcopy(measure_acc_before)
+
+        before_gc = False
+        before_acc = False
+
+        while (len(measure_gc_after) < LEN_GC or len(measure_acc_after) < LEN_ACC) :
+            pass
+
+        if len(measure_gc_after) == LEN_GC : 
+            before_gc = True
+            data_gc = data_gc + measure_gc_after
+            measure_gc_after = []
+
+            while len(measure_acc_after) < LEN_ACC:
+                pass
+
+            before_acc = True
+            data_acc = data_acc + measure_acc_after
+            measure_acc_after = []
+
+        elif len(measure_acc_after) == LEN_ACC:
+            before_acc = True
+            data_acc = data_acc + measure_acc_after
+            measure_acc_after = []
+
+            while len(measure_gc_after) < LEN_GC : 
+                pass
+            
+            before_gc = True
+            data_gc = data_gc + measure_gc_after
+            measure_gc_after = []
+            
+        
+        measurement = Data.objects.create(user=request.user,session_id = session_id, shot_id = shot_id, gravity_center = data_gc, acceleration = data_acc, height=float(H), width=float(W))
+        measurement.save()
+        shot_id = shot_id + 1
+    return JsonResponse({})
+    
 
 def finish(request):
     global new_session, shot_id
@@ -183,4 +206,3 @@ def finish(request):
     messages.success(request,"Measures finished")
     new_session = True
     return render(request,"app/index.html")
-

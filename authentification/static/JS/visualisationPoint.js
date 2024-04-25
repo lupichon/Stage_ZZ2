@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", function() {
     var html_x = document.getElementById('x');
     var html_y = document.getElementById('y');
     var start_stop = document.getElementById('start_stop');
+    let coordonnees = new Array(2);
+    var first_point = true;
 
     start_stop.addEventListener('click',function(){
         if(interval)
@@ -40,7 +42,16 @@ document.addEventListener("DOMContentLoaded", function() {
         ctx.closePath();
     }
 
-
+    function drawLine(x1, y1, x2, y2, color, lineWidth) {
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);  
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = color;  
+        ctx.lineWidth = lineWidth; 
+        ctx.stroke();  
+        ctx.closePath();
+    }
+    
     function clearCanvas() 
     {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -69,13 +80,23 @@ document.addEventListener("DOMContentLoaded", function() {
                 var taille = 5;
             }
             drawVisualisationPoint(x_tail, y_tail, color, taille);
-
+            if(!first_point)
+            {
+                drawLine(x_tail, y_tail, coordonnees[0], coordonnees[1], color, taille);
+            }
+            else
+            {
+                first_point = false;
+            }
+            coordonnees[0] = x_tail;
+            coordonnees[1] = y_tail;
         } 
         else 
         {
             clearCanvas();
             html_x.textContent = "X = " ;
             html_y.textContent = "Y = " ;
+            first_point = true;
         }
     }
 
