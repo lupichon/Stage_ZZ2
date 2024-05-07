@@ -36,6 +36,14 @@ document.addEventListener("DOMContentLoaded", function() {
         var relativeX = screenWidth / 2 + x;
         var relativeY = screenHeight / 2 - y;
 
+        if(data.CoG == 1)
+        {
+            point.style.backgroundColor = "blue";
+        }
+        else
+        {
+            point.style.backgroundColor = "red";
+        }
         point.style.left = relativeX + "px";
         point.style.top = relativeY + "px";
 

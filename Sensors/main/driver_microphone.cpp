@@ -34,13 +34,3 @@ void readMicro()
     }
   }
 }
-
-void sendMicro()
-{
-  peakToPeak = 0;
-  if (signalMax>=signalMin)
-  {
-    peakToPeak = signalMax - signalMin;
-  }
-  memcpy(buffer, &peakToPeak, sizeof(peakToPeak));
-}

@@ -15,12 +15,15 @@
 		<link rel="stylesheet" type="text/css" href="{% static 'CSS/util.css' %}">
 		<link rel="stylesheet" type="text/css" href="{% static 'CSS/main.css' %}">
 		<link rel="stylesheet" type="text/css" href="{% static 'CSS/styles.css' %}">
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		<script src="{% static 'JS/updatePoint.js' %}"></script>
+		<script src="{% static 'JS/updateQuaternion.js' %}"></script>
+		<!-- <script src="{% static 'JS/updateAcc.js' %}"></script> -->
+		<script src="{% static 'JS/save.js' %}"></script>
+
 	</head>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{% static 'JS/updatePoint.js' %}"></script>
-	<script src="{% static 'JS/updateAcc.js' %}"></script>
-	<script src="{% static 'JS/save.js' %}"></script>
+	
     <body>	
 		<div class="limiter">
 			<div class="container-login100" style="background-image: url('{% static "IMAGES/bg-01.jpg" %}');">
@@ -41,9 +44,11 @@
 				<div class="point"></div>
 			</div>			
 		</div>
-		<canvas id="chart1" width="50" height="50"></canvas>
+
+		
+		<!-- <canvas id="chart1" width="50" height="50"></canvas>
 		<div id="acc_x" ></div>
 		<div id="acc_y" ></div>
-		<div id="acc_z" ></div>
+		<div id="acc_z" ></div> -->
 	</body>
 </html>

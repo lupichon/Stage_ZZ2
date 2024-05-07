@@ -4,8 +4,6 @@ sensors_event_t a, g, temp;
 
 void initAcc()
 {
-  Serial.println("Adafruit MPU6050 test!");
-
   if (!mpu.begin()) 
   {
     while (1) 
@@ -25,15 +23,6 @@ void initAcc()
 void readAcc()
 {
   mpu.getEvent(&a, &g, &temp);
-}
-
-void sendAcc()
-{
-  memcpy(buffer + sizeof(peakToPeak), &a.acceleration.x, sizeof(a.acceleration.x));
-  memcpy(buffer + sizeof(peakToPeak) + sizeof(a.acceleration.x), &a.acceleration.y, sizeof(a.acceleration.y));
-  memcpy(buffer + sizeof(peakToPeak) + sizeof(a.acceleration.x) + sizeof(a.acceleration.y), &a.acceleration.z, sizeof(a.acceleration.z));
-
-  SerialBT.write(buffer, sizeof(buffer));
 }
 
 

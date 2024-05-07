@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     
-    function updatePointPosition() {
+    function save() {
         $.ajax({
             url: 'save',
             type: 'GET',
@@ -13,5 +13,5 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
-    setInterval(updatePointPosition, 10);
+    setInterval(save, 10);
 });

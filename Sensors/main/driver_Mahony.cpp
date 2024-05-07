@@ -3,6 +3,17 @@
 float q[4] = {1.0, 0.0, 0.0, 0.0};
 float Kp = 30.0;
 float Ki = 0.0;
+unsigned long now = 0;
+unsigned long last = 0;
+
+void readQuaternion(float ax, float ay, float az, float gx, float gy, float gz)
+{
+  static float deltat = 0;
+  now = micros();
+  deltat = (now - last) * 1.0e-6; 
+  last = now;
+  Mahony_update(ax, ay, az, gx, gy, gz,deltat);
+}
 
 void Mahony_update(float ax, float ay, float az, float gx, float gy, float gz, float deltat) 
 {
@@ -82,13 +93,11 @@ void Mahony_update(float ax, float ay, float az, float gx, float gy, float gz, f
     q[3] += newValue3;
   }
 
-  Serial.println(q[3]);
-
   // renormalise quaternion
   recipNorm = 1.0 / sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3] * q[3]);
   q[0] = q[0] * recipNorm;
   q[1] = q[1] * recipNorm;
   q[2] = q[2] * recipNorm;
-  //q[3] = q[3] * recipNorm;
+  q[3] = q[3] * recipNorm;
   q[3] = 0;
 }

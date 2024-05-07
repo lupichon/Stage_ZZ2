@@ -12,6 +12,5 @@ extern unsigned int signalMax;
 extern unsigned int signalMin;
 
 void readMicro();
-void sendMicro();
 
 #endif

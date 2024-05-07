@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
 
-
     var Factor = 20;
     var canvas = document.getElementById('myCanvas');
     var ctx = canvas.getContext('2d');

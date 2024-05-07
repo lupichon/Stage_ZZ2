@@ -13,6 +13,5 @@ extern sensors_event_t a, g, temp;
 
 void initAcc();
 void readAcc();
-void sendAcc();
 
 #endif

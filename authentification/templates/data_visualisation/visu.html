@@ -13,10 +13,6 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'CSS/main.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'CSS/styles.css' %}"/>
 </head>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="{% static 'JS/visualisationPoint.js' %}"></script>
-<script src="{% static 'JS/visualisationAcc.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <body>
     <div class="limiter">
@@ -39,6 +35,10 @@
 			</button>
 		</div>
 	</div>
-	<canvas id="chart1" width="50" height="50"></canvas>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="{% static 'JS/visualisationPoint.js' %}"></script>
+	<script src="{% static 'JS/visualisationRifle.js' %}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<!-- <canvas id="chart1" width="50" height="50"></canvas> -->
 	
 </body>
