@@ -71,7 +71,7 @@ class Wiiboard:
 			raise Exception("Error: Bluetooth not found")
 		
 		self.receivesocket.connect((address, 0x13))
-		self.receivesocket.settimeout(120)
+		self.receivesocket.settimeout(2)
 		self.controlsocket.connect((address, 0x11))
 		if self.receivesocket and self.controlsocket:
 			print("Connected to Wiiboard at address " + address)

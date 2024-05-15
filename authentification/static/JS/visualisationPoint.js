@@ -11,7 +11,8 @@ document.addEventListener("DOMContentLoaded", function() {
     let coordonnees = new Array(2);
     var first_point = true;
 
-    start_stop.addEventListener('click',function(){
+    function startStop()
+    {
         if(interval)
         {
             clearInterval(interval);
@@ -21,7 +22,8 @@ document.addEventListener("DOMContentLoaded", function() {
         {
             interval = setInterval(getVisualisationData, slider.value);
         }
-    });
+    }
+
 
     slider.oninput = function() 
     {
@@ -123,6 +125,7 @@ document.addEventListener("DOMContentLoaded", function() {
         var canvasWidth = parseInt(dimElement.getAttribute('data-width'));
         canvas.width = canvasWidth * Factor;
         canvas.height = canvasHeight * Factor;
+        start_stop.addEventListener('click',startStop);
         interval = setInterval(getVisualisationData, slider.value);
     }
 

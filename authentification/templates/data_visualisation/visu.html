@@ -12,6 +12,9 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'CSS/util.css' %}"/>
 	<link rel="stylesheet" type="text/css" href="{% static 'CSS/main.css' %}"/>
     <link rel="stylesheet" type="text/css" href="{% static 'CSS/styles.css' %}"/>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="{% static 'JS/visualisationPoint.js' %}"></script>
+	<script src="{% static 'JS/visualisationRifle.js' %}"></script>
 </head>
 
 <body>
@@ -29,16 +32,11 @@
                 <canvas id="myCanvas" class="canvas" width="500" height="500"></canvas>
             </div>
 
-			<input type="range" min="10" max="1000" value="100" class="slider" id="myRange">
+			<input type="range" min="50" max="1000" value="50" class="slider" id="myRange">
 			<button id="start_stop" class="login100-form-btn" style="width: 80px; height: 35px; font-size: 12px;position: absolute; right: 150px; top: 60px">
 				Stop/Start
 			</button>
 		</div>
 	</div>
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="{% static 'JS/visualisationPoint.js' %}"></script>
-	<script src="{% static 'JS/visualisationRifle.js' %}"></script>
-	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	<!-- <canvas id="chart1" width="50" height="50"></canvas> -->
 	
 </body>

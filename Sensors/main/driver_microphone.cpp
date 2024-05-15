@@ -1,6 +1,7 @@
 #include "driver_microphone.hpp"
+#include <math.h>
 
-const int sampleWindow = 50;  
+const int sampleWindow = 10;  
 int const AMP_PIN = 15; //PIN D15      
 unsigned int sample;
 unsigned long startMillis = 0;
@@ -32,5 +33,10 @@ void readMicro()
         signalMin = sample;  
       }
     }
+  }
+
+  if (signalMax>=signalMin)
+  {
+    peakToPeak = signalMax - signalMin;
   }
 }

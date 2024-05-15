@@ -7,7 +7,7 @@ import processing.net.*;
 ToxiclibsSupport gfx;
 
 float[] q = new float[4];
-Quaternion quat = new Quaternion(1, 0, 0, 0);
+toxi.geom.Quaternion quat = new toxi.geom.Quaternion(1, 0, 0, 0);
 int shot = 0;
 
 float pitch = 0.0;
@@ -37,14 +37,14 @@ boolean mode = false; // 0 : rotation, 1 : translation
 void setup() {
     
     size(600, 600, P3D);
-    gfx = new ToxiclibsSupport(this);
+    gfx = new toxi.processing.ToxiclibsSupport(this);
 
     lights();
     smooth();
   
     server = new Server(this, port);
     
-    rifle = loadShape("3D_model_rifle/11737_rifle_v1_L2.obj");
+    rifle = loadShape("../../../authentification/static/PROCESSING/3D_model_rifle/11737_rifle_v1_L2.obj");
 }
 
 void draw() {
@@ -137,6 +137,7 @@ void drawTarget(float x, float y, float outerRadius, int numCircles)
     ellipse(x, y, diameter, diameter);
   }
 }
+
 
 void drawPitch()
 {

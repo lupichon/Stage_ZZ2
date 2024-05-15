@@ -41,62 +41,96 @@ def get_visualisation(request):
     ind_qua = 0
 
     processing_java_path = "/home/lucas/Downloads/processing-4.3-linux-x64/processing-4.3/processing-java"
-    sketch_directory = "/home/lucas/ISIMA/Stage/Wii/Stage_ZZ2/Sensors/visualisation/visu_rifle"
+    sketch_directory = "/home/lucas/ISIMA/Stage/gr8w8upd8m8/Wii/Stage_ZZ2/Sensors/visualisation/visu_rifle"
     command = [processing_java_path, "--sketch=" + sketch_directory, "--run"]
 
     if request.method == "POST" : 
         shotID = request.POST['shotID']
         sessionID = request.POST['sessionID']
     
-    try : 
+    if shotID != "" : 
+
+        try : 
+
+            try : 
         
-        if m.reader.connect_processing == True : 
-            m.visualisation = True
+                if m.reader.connect_processing == True : 
+                    m.visualisation = True
+                
+                else : 
+                    if process is None or process.poll() is not None: 
+                        process = subprocess.Popen(command)
+                        time.sleep(7)
+
+                processing_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                processing_socket.connect((HOST, PORT))
+
+            except : 
+                messages.error(request,"Unable to launch the visualisation of the rifle, please try again")
+
+            data = Data.objects.get(user=request.user, session_id=sessionID, shot_id=shotID)
+            gravity_center = data.gravity_center
+            LEN = len(gravity_center)
+
+            qua = data.quaternion
+            LEN_QUA = len(qua)
+            LEN_QUA_DIV2 = LEN_QUA//2
+
+            width = data.width
+            height = data.height
+            context = {
+                    'width' : data.width,
+                    'height' : data.height,
+                    'sessionID' : sessionID,
+                    'shotID' : shotID,
+                    }
+            
+            return render(request,"data_visualisation/visu.html",context)
+    
+        except : 
+            messages.error(request,"The session ID and the shot ID do not match")
+    
+    else : 
+        try : 
+            data = Data.objects.filter(user=request.user, session_id=sessionID)
+            data = list(data)
+            
+            context = {
+                    'width' : data[0].width,
+                    'height' : data[0].height,
+                    'sessionID' : sessionID,
+                    }
+            return render(request,"data_visualisation/visuSession.html",context)
         
-        else : 
-            if process is None or process.poll() is not None: 
-                process = subprocess.Popen(command)
-                time.sleep(7)
+        except Exception as e: 
+            print(e)
+            messages.error(request, "The session ID does not exist")
 
-        processing_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        processing_socket.connect((HOST, PORT))
-
-        data = Data.objects.get(user=request.user, session_id=sessionID, shot_id=shotID)
-
-        gravity_center = data.gravity_center
-        LEN = len(gravity_center)
-
-        qua = data.quaternion
-        LEN_QUA = len(qua)
-        LEN_QUA_DIV2 = LEN_QUA//2
-
-        width = data.width
-        height = data.height
-        context = {
-                'width' : data.width,
-                'height' : data.height,
-                'sessionID' : sessionID,
-                'shotID' : shotID,
-                }
-        
-        return render(request,"data_visualisation/visu.html",context)
-    except Exception as e: 
-        print(str(e))
-        messages.error(request,"The session ID and the shot ID do not match")
-        return render(request,"data_visualisation/main_page.html")
+    return render(request,"data_visualisation/main_page.html")
 
 
 def visu_gravityCenter(request):
     global ind
     if ind<LEN:
         ind = ind + 1
-        if ind-1 == LEN//2 :
+        if ind-1 == LEN//2 -1:
             return JsonResponse({'x': gravity_center[ind-1][0], 'y': gravity_center[ind-1][1], 'width': width, 'height': height,'status': 0})
         else:
             return JsonResponse({'x': gravity_center[ind-1][0], 'y': gravity_center[ind-1][1], 'width': width, 'height': height,'status': 1})
     else:
         ind = 0
         return JsonResponse({'x': 0, 'y': 0, 'width': width, 'height': height,'status': 2})
+    
+def visu_sessionGravityCenter(request):
+
+    midle = len(data[0].gravity_center)//2-1
+    list_points = []
+
+    for item in data:
+        list_points.append(item.gravity_center[midle])
+    
+    return JsonResponse({'list_points': list_points})
+        
 
 def visu_rifle(request):
     global ind_qua
@@ -109,7 +143,7 @@ def visu_rifle(request):
         q3 = bytearray(struct.pack("f", qua[ind_qua-1][3]))
         shot = b'0'
         
-        if ind_qua > LEN_QUA_DIV2-20 and ind_qua < LEN_QUA_DIV2+20: 
+        if ind_qua > LEN_QUA_DIV2-10 and ind_qua < LEN_QUA_DIV2+10: 
             shot = b'1'
 
         data = q0 + q1 + q2 + q3 + shot
@@ -123,16 +157,3 @@ def visu_rifle(request):
         ind_qua = 0
 
     return JsonResponse({})
-
-
-def visu_Acc(request):
-    acc_X = []
-    acc_Y = []
-    acc_Z = []
-
-    for elem in acc:
-        acc_X.append(elem[0])
-        acc_Y.append(elem[1])
-        acc_Z.append(elem[2])
-
-    return JsonResponse({'x': acc_X, 'y': acc_Y, 'z': acc_Z})

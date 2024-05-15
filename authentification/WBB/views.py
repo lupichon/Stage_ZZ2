@@ -27,12 +27,11 @@ def wbb(request):
     global H, W, session_id, new_session, first_connexion
         
     processing_java_path = "/home/lucas/Downloads/processing-4.3-linux-x64/processing-4.3/processing-java"
-    sketch_directory = "/home/lucas/ISIMA/Stage/Wii/Stage_ZZ2/Sensors/visualisation/visu_rifle"
+    sketch_directory = "/home/lucas/ISIMA/Stage/gr8w8upd8m8/Wii/Stage_ZZ2/Sensors/visualisation/visu_rifle"
     command = [processing_java_path, "--sketch=" + sketch_directory, "--run"]
     
-    if w.board.status == "Connected" and m.reader.connected==True:
-
-        m.visualisation = False
+    #if w.board.status == "Connected" and m.reader.connected==True:
+    if 1 :    
         if first_connexion : 
             session_id = Data.objects.filter(user=request.user).aggregate(Max('session_id'))['session_id__max']
             first_connexion = False
@@ -59,14 +58,6 @@ def wbb(request):
         if hauteur!="" and largeur!="" :
             m.trigger = False
 
-            if m.reader.connect_processing == False : 
-                subprocess.Popen(command)
-            
-            '''chemin_relatif = "../../Sensors/visualisation/visu_rifle/linux-amd64/visu_rifle"
-            chemin_absolu = os.path.dirname(os.path.abspath(__file__))
-            chemin_absolu_exe = os.path.join(chemin_absolu, chemin_relatif)
-            subprocess.Popen([chemin_absolu_exe])'''
-            
             return render(request,"WBB/wbb.html",context)
         else:
             messages.error(request,"Please, entry the height and the width")
@@ -83,7 +74,7 @@ def connectWiiboard(request):
         Wiiboard_thread.start()
 
         while w.board.status!="Connected" and w.find == True:
-            pass
+            time.sleep(1)
 
         if w.board.status == "Disconnected":
             messages.error(request,"Wiiboard not connected, please try again")
@@ -107,7 +98,7 @@ def connectSensors(request):
         Sensors_thread.start()
 
         while m.reader.connected == False and m.find == True:
-            pass
+            time.sleep(1)
 
         if m.reader.connected == False:
             messages.error(request, "Microphone and accelerometer not connected, please try again")
@@ -127,12 +118,6 @@ before_gc = True
 measure_gc_after = []
 measure_gc_before = [[0,0] for _ in range(LEN_GC)]
 ind_gc = 0
-
-LEN_ACC = 100
-before_acc = True
-measure_acc_after = []
-measure_acc_before = [[0,0,0] for _ in range(LEN_ACC)]
-ind_acc = 0
 
 LEN_QUA = 150
 before_qua = True
@@ -159,25 +144,6 @@ def get_point_position(request):
 
     return JsonResponse({'x': X, 'y': Y, 'sessionID': session_id, 'shotID': shot_id, 'CoG': CoG})
 
-def get_Acc(request):
-    global ind_acc
-
-    Ax = m.acceleration_x
-    Ay = m.acceleration_y
-    Az = m.acceleration_z
-
-    if before_acc : 
-        measure_acc_before.pop(0)
-        measure_acc_before.append([Ax,Ay,Az])
-        ind_acc = 0
-
-    else:
-        if ind_acc < LEN_ACC:
-            measure_acc_after.append([Ax,Ay,Az])
-            ind_acc = ind_acc + 1
-
-    return JsonResponse({'acc_x' : Ax, 'acc_y' : Ay, 'acc_z' : Az})
-
 def get_Quaternion(request):
     global ind_qua
 
@@ -196,11 +162,11 @@ def get_Quaternion(request):
             measure_qua_after.append([q0,q1,q2,q3])
             ind_qua = ind_qua +1
 
-    return JsonResponse({})
+    return JsonResponse({'q0': q0, 'q1': q1, 'q2': q2, 'q3':q3})
 
 def save_Measure(request):
     global measure_gc_before, shot_id, session_id, H, W, before_gc, measure_gc_after, measure_qua_after, measure_qua_before, before_qua
-    if m.trigger: 
+    if m.trigger : 
         m.trigger = False
         shot_id = shot_id + 1
 
@@ -210,36 +176,19 @@ def save_Measure(request):
         before_gc = False
         before_qua = False
 
-        while (len(measure_gc_after) < LEN_GC or len(measure_qua_after) < LEN_QUA) :
-            pass
+        while (len(measure_gc_after) < LEN_GC or len(measure_qua_after) < LEN_QUA) :  
+            time.sleep(1)
 
-        if len(measure_gc_after) == LEN_GC : 
-            before_gc = True
-            data_gc = data_gc + measure_gc_after
-            measure_gc_after = []
+        data_gc = data_gc + measure_gc_after
+        data_qua = data_qua + measure_qua_after
 
-            while len(measure_qua_after) < LEN_QUA:
-                pass
+        before_gc = True
+        before_qua = True
 
-            before_qua = True
-            data_qua = data_qua + measure_qua_after
-            measure_qua_after = []
-
-        elif len(measure_qua_after) == LEN_QUA:
-            before_qua = True
-            data_qua = data_qua + measure_qua_after
-            measure_qua_after = []
-
-            while len(measure_gc_after) < LEN_GC : 
-                pass
-            
-            before_gc = True
-            data_gc = data_gc + measure_gc_after
-            measure_gc_after = []
-            
+        measure_gc_after = []
+        measure_qua_after = []
         
-        #measurement = Data.objects.create(user=request.user,session_id = session_id, shot_id = shot_id, gravity_center = data_gc, acceleration = data_acc, height=float(H), width=float(W))
-        measurement = Data.objects.create(user=request.user,session_id = session_id, shot_id = shot_id, gravity_center = data_gc, quaternion = data_qua, height=float(H), width=float(W))
+        measurement = Data.objects.create(user=request.user,session_id = session_id, shot_id = shot_id - 1, gravity_center = data_gc, quaternion = data_qua, height=float(H), width=float(W))
         measurement.save()
 
     return JsonResponse({})

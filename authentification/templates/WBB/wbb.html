@@ -15,13 +15,7 @@
 		<link rel="stylesheet" type="text/css" href="{% static 'CSS/util.css' %}">
 		<link rel="stylesheet" type="text/css" href="{% static 'CSS/main.css' %}">
 		<link rel="stylesheet" type="text/css" href="{% static 'CSS/styles.css' %}">
-		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-		<script src="{% static 'JS/updatePoint.js' %}"></script>
-		<script src="{% static 'JS/updateQuaternion.js' %}"></script>
-		<!-- <script src="{% static 'JS/updateAcc.js' %}"></script> -->
-		<script src="{% static 'JS/save.js' %}"></script>
-
+		<object id="model3D" type="model/obj" data="{% static 'PROCESSING/3D_model_rifle/11737_rifle_v1_L2.obj' %}" width="600" height="400"></object>
 	</head>
 	
     <body>	
@@ -32,23 +26,35 @@
 				<div class="rectangle">
 					<div id="x" style="position: relative; top: 105%; left: 48%;"></div>
 					<div id="y" style="position: relative; top: 107%; left: 48%;"></div>
-					<div style="position: relative; top: 109%; left: 41%;">
-						<form action="{% url 'finish' %}" method="post" style="display: inline-block; margin-left: 15px;">
-							{% csrf_token %}
-							<button class="login100-form-btn" style="width: 80px; height: 35px; font-size: 12px;">
-								Finish
+					
+					<div style="position: relative; top: 109%; left: 36%;">
+						<div style="display: inline-block">
+							<button id="clearButton" class="login100-form-btn" style="width: 80px; height: 35px; font-size: 12px;">
+								Clear
 							</button>
-						</form>
+						</div>
+						
+						<div style="display: inline-block;">
+							<form action="{% url 'finish' %}" method="post">
+								{% csrf_token %}
+								<button class="login100-form-btn" style="width: 80px; height: 35px; font-size: 12px;">
+									Finish
+								</button>
+							</form>
+						</div>
 					</div>
+					
 				</div>
 				<div class="point"></div>
 			</div>			
 		</div>
-
-		
-		<!-- <canvas id="chart1" width="50" height="50"></canvas>
-		<div id="acc_x" ></div>
-		<div id="acc_y" ></div>
-		<div id="acc_z" ></div> -->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script src="{% static 'JS/updatePoint.js' %}"></script>
+		<script src="{% static 'JS/updateQuaternion.js' %}"></script>
+		<script src="{% static 'JS/save.js' %}"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/addons/p5.sound.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/toxiclibsjs/0.1.3/toxiclibs.min.js" integrity="sha512-XXs22VoCpwSw/DSIaY5YXMBLEp2CFA7vQO+GzNxFk8kmhabcHgXYpU7gFDij7+VLmoDfW3F3y5bu0O9r7REP2A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  		<script src="{% static 'JS/sketch.js' %}"></script>
 	</body>
 </html>

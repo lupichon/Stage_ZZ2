@@ -15,10 +15,13 @@ void setup()
 
 void loop()
 {
+  
+
   readMicro();
   readAcc();
   readQuaternion(a.acceleration.x, a.acceleration.y, a.acceleration.z, g.gyro.x, g.gyro.y, g.gyro.z);
 
   sendData();
+
 }
 

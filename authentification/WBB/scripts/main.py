@@ -1,6 +1,5 @@
 import WBB.scripts.wiiboard as wiiboard
 import pygame
-import time
 
 board = wiiboard.Wiiboard()
 

@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Data Visualisation</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="icon" type="image/png" href="{% static 'IMAGES/icons/favicon.ico' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'FONT/font-awesome-4.7.0/css/font-awesome.min.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'FONT/iconic/css/material-design-iconic-font.min.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'CSS/util.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'CSS/main.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'CSS/styles.css' %}"/>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'JS/visualisationSessionPoint.js' %}"></script>
+</head>
+
+<body>
+    <div class="limiter">
+        <div class="container-login100" style="background-image: url('{% static "IMAGES/bg-01.jpg" %}');">
+			<span class="login100-form-title p-b-34 p-t-27" style="color: black; font-size: 14px; position: absolute; top: 10px; left: 10px;">
+				<strong> Session ID : {{ sessionID}} <br><br></strong>
+			</span>
+
+            <div id="dim" data-height="{{ height }}" data-width="{{ width }}"></div>
+
+            <div class="canvas-container">
+                <canvas id="myCanvas" class="canvas" width="500" height="500"></canvas>
+            </div>
+
+		</div>
+	</div>
+	
+</body>
